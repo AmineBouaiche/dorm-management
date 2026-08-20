@@ -1,0 +1,7 @@
+Alembic migration environment for the Dorm Management System.
+
+Create a migration after changing SQLAlchemy models:
+    alembic revision --autogenerate -m "describe change"
+
+Apply migrations:
+    alembic upgrade head

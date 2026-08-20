@@ -1,0 +1,159 @@
+# Dorm Management System
+
+A backend-first dormitory management platform built with FastAPI and PostgreSQL. The project models residences, rooms, students and bookings, with transaction-safe booking constraints, JWT authentication and role-based authorization.
+
+## Stack
+
+- Python 3.13
+- FastAPI
+- PostgreSQL
+- SQLAlchemy 2
+- Alembic
+- Pydantic
+- PyJWT
+- pytest
+- Docker / Docker Compose
+
+## Current capabilities
+
+### Public
+- Register a student account
+- Log in and receive a JWT bearer token
+- Browse active residences and rooms
+- Query active room availability for a date range
+
+### Student
+- Read own profile
+- Create bookings using authenticated identity
+- Read own booking history
+- Cancel own bookings
+
+The booking request deliberately does not accept a student identifier. The backend derives the student from the authenticated user.
+
+### Admin
+- Create and update residences
+- Create and update rooms
+- Activate/deactivate residences and rooms without deleting history
+- List all inventory, including inactive records
+- List students
+- List all bookings
+- Confirm bookings
+- Cancel any booking
+- Read occupancy, booking-status and confirmed-revenue analytics
+
+## Weekly pricing
+
+Rooms now store `weekly_rate`, not an ambiguous `price` field. Booking totals are calculated by the backend:
+
+```text
+billable_weeks = ceil(number_of_days / 7)
+booking_amount = weekly_rate * billable_weeks
+```
+
+A partial week is billed as a full week.
+
+Migration `20260820_0003` renames the old `price` column and normalizes existing synthetic development rooms to representative weekly rates because the old whole-booking values are not semantically convertible to weekly pricing.
+
+## Inventory lifecycle
+
+Rooms and residences are never hard-deleted in v1. Both have an `is_active` flag.
+
+- active residence + active room: visible and bookable
+- inactive residence or room: hidden from public room discovery and cannot receive new bookings
+- historical bookings remain readable
+
+A residence also has an optional `image_url`, intended to point to its representative frontend image.
+
+## Booking integrity
+
+Pending and confirmed bookings block overlapping room/date ranges. A student also cannot hold overlapping active bookings across different rooms. PostgreSQL exclusion constraints are the final concurrency-safe enforcement layer; service-level checks provide readable API errors.
+
+## Local setup
+
+Copy `.env.example` to `.env` and replace `JWT_SECRET_KEY` with a long random value for anything beyond local development.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+docker compose up -d
+alembic upgrade head
+pytest
+```
+
+After the Phase 5A update, `alembic current` should report:
+
+```text
+20260820_0003 (head)
+```
+
+## Create the first admin
+
+With PostgreSQL running and the virtual environment active:
+
+```powershell
+python scripts/create_admin.py
+```
+
+## Run the API
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Main API surface
+
+```text
+POST  /api/auth/register
+POST  /api/auth/login
+GET   /api/auth/me
+
+GET   /api/buildings
+POST  /api/buildings                    ADMIN
+PATCH /api/buildings/{building_id}      ADMIN
+
+GET   /api/rooms
+GET   /api/rooms/available
+GET   /api/rooms/{room_id}
+POST  /api/rooms                        ADMIN
+PATCH /api/rooms/{room_id}              ADMIN
+
+GET   /api/students/me                  STUDENT
+
+POST  /api/bookings                     STUDENT
+GET   /api/bookings/me                  STUDENT
+PATCH /api/bookings/{id}/cancel         STUDENT (owner only)
+
+GET   /api/admin/buildings              ADMIN (includes inactive)
+GET   /api/admin/rooms                  ADMIN (includes inactive)
+GET   /api/admin/students               ADMIN
+GET   /api/admin/bookings               ADMIN
+PATCH /api/admin/bookings/{id}/confirm  ADMIN
+PATCH /api/admin/bookings/{id}/cancel   ADMIN
+GET   /api/admin/analytics              ADMIN
+```
+
+## Test database isolation
+
+The automated test suite uses a separate PostgreSQL instance on port `5433` (`db_test`). It does not read from or modify the persistent development database on port `5432`.
+
+Start both services with:
+
+```powershell
+docker compose up -d
+```
+
+Then run:
+
+```powershell
+pytest
+```
+
+At the beginning of each test session, Alembic rebuilds the test schema from the migration history. Each individual test runs inside an outer transaction/savepoint and is rolled back afterward, so test data cannot leak between tests.
