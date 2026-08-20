@@ -157,3 +157,18 @@ pytest
 ```
 
 At the beginning of each test session, Alembic rebuilds the test schema from the migration history. Each individual test runs inside an outer transaction/savepoint and is rolled back afterward, so test data cannot leak between tests.
+
+## Frontend foundation
+
+The first frontend milestone is intentionally framework-free and establishes the shared interface system before feature pages are implemented.
+
+- Source Sans 3 typography with system fallbacks
+- centralized color, typography, spacing, radius, layout, and motion tokens
+- responsive 1240 px content container
+- primary top navigation with a text-based mobile menu
+- secondary administration navigation primitives
+- shared buttons, fields, panels, status indicators, messages, tables, skeletons, and dialog styles
+- FastAPI static-file serving from `frontend/`
+- `/style-guide` visual reference for the foundation components
+
+Run the application and open `http://127.0.0.1:8000/style-guide` to inspect the current frontend foundation.

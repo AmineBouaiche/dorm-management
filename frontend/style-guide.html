@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Residence UI foundation</title>
+    <link rel="stylesheet" href="/static/css/tokens.css" />
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/layout.css" />
+    <link rel="stylesheet" href="/static/css/components.css" />
+  </head>
+  <body>
+    <div data-primary-navigation></div>
+
+    <main class="page">
+      <div class="container">
+        <header class="page-header">
+          <h1>Frontend foundation</h1>
+          <p class="page-header__description">A visual reference for the shared Residence interface primitives.</p>
+        </header>
+
+        <section class="section">
+          <h2>Actions</h2>
+          <div class="cluster">
+            <button class="button button--primary" type="button">Primary action</button>
+            <button class="button button--secondary" type="button">Secondary action</button>
+            <button class="button button--danger" type="button">Destructive action</button>
+            <button class="button" type="button" disabled>Disabled action</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Form controls</h2>
+          <div class="grid grid--2">
+            <label class="field">
+              <span class="field__label">Email address</span>
+              <input class="input" type="email" value="student@example.com" />
+              <span class="field__hint">Use the email associated with your account.</span>
+            </label>
+            <label class="field">
+              <span class="field__label">Room type</span>
+              <select class="select">
+                <option>Single</option>
+                <option>Shared</option>
+                <option>Studio</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Invalid field</span>
+              <input class="input" aria-invalid="true" value="invalid" />
+              <span class="field__error">Enter a valid value.</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Panels and statuses</h2>
+          <div class="grid grid--3">
+            <article class="panel">
+              <h3>North Hall</h3>
+              <p class="card__eyebrow">Room A101</p>
+              <span class="status status--success">Confirmed</span>
+            </article>
+            <article class="panel">
+              <h3>West Court</h3>
+              <p class="card__eyebrow">Room B201</p>
+              <span class="status status--warning">Pending</span>
+            </article>
+            <article class="panel">
+              <h3>Riverside House</h3>
+              <p class="card__eyebrow">Room C103</p>
+              <span class="status status--error">Cancelled</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Messages</h2>
+          <div class="stack">
+            <div class="message message--success">Room details updated.</div>
+            <div class="message message--error">We couldn't load the rooms.</div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Administrative table</h2>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Room</th>
+                  <th>Residence</th>
+                  <th>Status</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Adam Smith</td>
+                  <td>A101</td>
+                  <td>North Hall</td>
+                  <td><span class="status status--warning">Pending</span></td>
+                  <td>£7,770</td>
+                </tr>
+                <tr>
+                  <td>Sarah Jones</td>
+                  <td>B204</td>
+                  <td>West Court</td>
+                  <td><span class="status status--success">Confirmed</span></td>
+                  <td>£8,610</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="/static/js/style-guide.js"></script>
+  </body>
+</html>
