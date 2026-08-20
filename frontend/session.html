@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Session | Residence</title>
+    <link rel="stylesheet" href="/static/css/tokens.css" />
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/layout.css" />
+    <link rel="stylesheet" href="/static/css/components.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+  </head>
+  <body>
+    <div data-primary-navigation></div>
+    <main class="page" data-session-page hidden>
+      <div class="container session-check">
+        <header class="page-header">
+          <h1>Authentication verified</h1>
+          <p class="page-header__description">Your student session is active. The student dashboard will replace this checkpoint in the next milestone.</p>
+        </header>
+        <section class="panel stack">
+          <dl class="session-check__rows">
+            <div class="session-check__row"><dt>Name</dt><dd data-user-name></dd></div>
+            <div class="session-check__row"><dt>Email</dt><dd data-user-email></dd></div>
+            <div class="session-check__row"><dt>Role</dt><dd data-user-role></dd></div>
+          </dl>
+          <div><button class="button button--secondary" type="button" data-sign-out>Sign out</button></div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="/static/js/pages/session.js"></script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-7) var(--space-4);
+}
+
+.auth-panel {
+  width: min(100%, 27rem);
+}
+
+.auth-panel--wide {
+  width: min(100%, 36rem);
+}
+
+.auth-panel__wordmark {
+  display: inline-block;
+  margin-bottom: var(--space-7);
+}
+
+.auth-panel__header {
+  margin-bottom: var(--space-6);
+}
+
+.auth-panel__header p {
+  margin-bottom: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.auth-panel__footer {
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.auth-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.password-control {
+  position: relative;
+}
+
+.password-control .input {
+  padding-right: 4.25rem;
+}
+
+.password-control__toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-primary);
+  background: transparent;
+  border: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.session-check {
+  max-width: 42rem;
+}
+
+.session-check__rows {
+  margin: 0;
+}
+
+.session-check__row {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.session-check__row:first-child {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.session-check__row dt {
+  color: var(--color-text-secondary);
+}
+
+.session-check__row dd {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 39.9375rem) {
+  .auth-shell {
+    place-items: start center;
+    padding-top: var(--space-6);
+  }
+
+  .auth-panel__wordmark {
+    margin-bottom: var(--space-6);
+  }
+
+  .auth-form-grid,
+  .session-check__row {
+    grid-template-columns: 1fr;
+  }
+
+  .session-check__row {
+    gap: var(--space-1);
+  }
+}

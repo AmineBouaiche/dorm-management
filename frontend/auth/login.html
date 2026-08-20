@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in | Residence</title>
+    <link rel="stylesheet" href="/static/css/tokens.css" />
+    <link rel="stylesheet" href="/static/css/base.css" />
+    <link rel="stylesheet" href="/static/css/layout.css" />
+    <link rel="stylesheet" href="/static/css/components.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-panel" aria-labelledby="login-title">
+        <a class="wordmark auth-panel__wordmark" href="/">Residence</a>
+        <div class="auth-panel__header">
+          <h1 id="login-title">Sign in</h1>
+          <p>Access your accommodation account.</p>
+        </div>
+
+        <div class="message message--success" data-registration-message hidden>
+          Account created. Sign in to continue.
+        </div>
+        <div class="message message--success" data-signed-out-message hidden>
+          You have been signed out.
+        </div>
+        <div class="message message--error" data-form-message role="alert" hidden></div>
+
+        <form class="stack" data-login-form novalidate>
+          <div class="field">
+            <label class="field__label" for="email">Email address</label>
+            <input class="input" id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="password">Password</label>
+            <div class="password-control">
+              <input class="input" id="password" name="password" type="password" autocomplete="current-password" required />
+              <button class="password-control__toggle" type="button" data-password-toggle data-target="password">Show</button>
+            </div>
+          </div>
+
+          <button class="button button--primary auth-submit" type="submit">Sign in</button>
+        </form>
+
+        <p class="auth-panel__footer">Don't have an account? <a href="/register">Create an account</a></p>
+      </section>
+    </main>
+    <script type="module" src="/static/js/pages/login.js"></script>
+    <script type="module" src="/static/js/pages/password-toggle.js"></script>
+  </body>
+</html>

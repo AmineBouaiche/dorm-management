@@ -172,3 +172,17 @@ The first frontend milestone is intentionally framework-free and establishes the
 - `/style-guide` visual reference for the foundation components
 
 Run the application and open `http://127.0.0.1:8000/style-guide` to inspect the current frontend foundation.
+
+## Frontend authentication milestone
+
+The framework-free frontend now includes real registration and login flows backed by the FastAPI API. Access tokens are held in browser `sessionStorage`, attached as bearer tokens by a centralized API client, and cleared when an authenticated API request returns `401`. Role resolution uses `GET /api/auth/me`; student and administrator session checkpoints reject the wrong role and redirect to the correct authenticated area.
+
+Development routes:
+
+- `/login` - student/admin sign in
+- `/register` - student registration
+- `/session` - temporary student authentication checkpoint
+- `/admin/session` - temporary administrator authentication checkpoint
+- `/style-guide` - frontend foundation reference
+
+The session checkpoint pages are intentionally temporary. They validate authentication infrastructure without pre-empting the locked student dashboard and admin interface designs.
