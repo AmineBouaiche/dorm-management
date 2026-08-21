@@ -446,3 +446,44 @@
 .confirmation-total strong { font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); color: var(--color-heading); }
 .submitted-booking__title { margin-top: var(--space-4); margin-bottom: var(--space-4); }
 .text-secondary { color: var(--color-text-secondary); }
+
+
+/* Student dashboard and booking management */
+.container--narrow { max-width: 52rem; }
+.eyebrow { color: var(--color-text-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: 0.04em; }
+.section-heading { margin-bottom: var(--space-3); }
+.empty-state { padding: var(--space-6); }
+.student-empty-state p { max-width: 38rem; color: var(--color-text-secondary); }
+.dashboard-booking__top,
+.dashboard-booking__bottom,
+.booking-card__top,
+.booking-detail-header,
+.booking-detail-total { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.dashboard-booking__top h2,
+.booking-card__top h3 { margin-bottom: 0; }
+.dashboard-booking__bottom { align-items: center; margin-top: var(--space-5); padding-top: var(--space-4); border-top: var(--border-width) solid var(--color-border); }
+.quick-access-card { min-height: 11rem; display: flex; flex-direction: column; align-items: flex-start; }
+.quick-access-card .text-link { margin-top: auto; }
+.booking-group + .booking-group { margin-top: var(--space-7); }
+.booking-list { display: grid; gap: var(--space-4); }
+.booking-card__action { margin-top: var(--space-4); }
+.booking-detail-header { padding-bottom: var(--space-5); border-bottom: var(--border-width) solid var(--color-border); }
+.booking-detail-header h1 { margin-bottom: 0; }
+.booking-detail-total { align-items: baseline; margin-top: var(--space-7); padding-top: var(--space-5); border-top: var(--border-width) solid var(--color-border); }
+.booking-detail-total span { color: var(--color-text-secondary); }
+.booking-detail-total strong { color: var(--color-heading); font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); }
+.booking-detail-actions,
+.account-actions { display: flex; justify-content: flex-end; margin-top: var(--space-6); }
+.button--danger-outline { color: var(--color-error); background: var(--color-surface); border-color: var(--color-error); }
+.button--danger-outline:hover { color: var(--color-surface); background: var(--color-error); }
+
+@media (max-width: 39.9375rem) {
+  .dashboard-booking__top,
+  .dashboard-booking__bottom,
+  .booking-card__top,
+  .booking-detail-header { align-items: flex-start; flex-direction: column; }
+  .booking-detail-actions,
+  .account-actions { justify-content: stretch; }
+  .booking-detail-actions .button,
+  .account-actions .button { width: 100%; }
+}

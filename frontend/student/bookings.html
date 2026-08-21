@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Bookings | Residence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <main class="page" data-bookings-page hidden>
+    <div class="container container--narrow">
+      <header class="page-header"><h1>My bookings</h1><p class="page-header__description">View your current and previous accommodation bookings.</p></header>
+      <div class="message message--error" data-bookings-error hidden><strong>We could not load your bookings.</strong><p data-bookings-error-text></p></div>
+      <div data-bookings-content aria-live="polite">
+        <div class="panel stack"><div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line"></div></div>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/bookings.js"></script>
+</body>
+</html>

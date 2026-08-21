@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking details | Residence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <main class="page" data-booking-detail-page hidden>
+    <div class="container container--narrow">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/bookings">My bookings</a><span>/</span><span>Booking details</span></nav>
+      <div data-booking-detail-content aria-live="polite"><div class="panel stack"><div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line"></div></div></div>
+      <div class="message message--error" data-booking-detail-error hidden><strong>We could not load this booking.</strong><p data-booking-detail-error-text></p></div>
+    </div>
+  </main>
+  <div class="dialog-backdrop" data-cancel-dialog hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+      <h2 id="cancel-title">Cancel booking</h2>
+      <p>Are you sure you want to cancel this booking?</p>
+      <p class="text-secondary" data-cancel-summary></p>
+      <div class="dialog__actions">
+        <button class="button button--secondary" type="button" data-keep-booking>Keep booking</button>
+        <button class="button button--danger" type="button" data-confirm-cancel>Cancel booking</button>
+      </div>
+    </section>
+  </div>
+  <script type="module" src="/static/js/pages/booking-detail.js"></script>
+</body>
+</html>

@@ -102,3 +102,7 @@ export function createBooking(data) {
 export function listMyBookings() {
   return apiRequest("/bookings/me");
 }
+
+export function cancelBooking(bookingId) {
+  return apiRequest(`/bookings/${bookingId}/cancel`, { method: "PATCH" });
+}

@@ -17,7 +17,7 @@ from app.core.config import settings
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_ROOT = PROJECT_ROOT / "frontend"
 
-app = FastAPI(title=settings.app_name, version="0.5.4")
+app = FastAPI(title=settings.app_name, version="0.5.5")
 app.include_router(auth_router, prefix="/api")
 app.include_router(buildings_router, prefix="/api")
 app.include_router(rooms_router, prefix="/api")
@@ -30,7 +30,7 @@ app.mount("/static", StaticFiles(directory=FRONTEND_ROOT), name="static")
 
 @app.get("/", include_in_schema=False)
 def frontend_index() -> FileResponse:
-    return FileResponse(FRONTEND_ROOT / "index.html")
+    return FileResponse(FRONTEND_ROOT / "student" / "dashboard.html")
 
 
 @app.get("/style-guide", include_in_schema=False)
@@ -80,7 +80,17 @@ def frontend_booking_submitted() -> FileResponse:
 
 @app.get("/bookings", include_in_schema=False)
 def frontend_bookings_handoff() -> FileResponse:
-    return FileResponse(FRONTEND_ROOT / "rooms" / "bookings-handoff.html")
+    return FileResponse(FRONTEND_ROOT / "student" / "bookings.html")
+
+
+@app.get("/bookings/{booking_id}", include_in_schema=False)
+def frontend_booking_detail(booking_id: int) -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "student" / "booking-detail.html")
+
+
+@app.get("/account", include_in_schema=False)
+def frontend_account() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "student" / "account.html")
 
 
 @app.get("/health", tags=["system"])

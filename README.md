@@ -203,3 +203,7 @@ This creates or refreshes North Hall, West Court, Riverside House, and Clifton L
 ## Phase 5B.4 booking workflow
 
 The student room-detail handoff now continues through an authenticated confirmation page and submits to the real `POST /api/bookings` endpoint. The confirmation page rechecks availability, displays billable weeks and an estimated total, disables duplicate submissions, and maps booking conflicts to domain-specific messages. Successful requests route to `/booking/submitted`, where the persisted booking is reloaded from `/api/bookings/me` and shown with its server-calculated amount and pending status.
+
+## Phase 5B.5 student experience
+
+The student frontend now includes the real dashboard, My Bookings, booking details, cancellation flow, and account page. The dashboard prioritises an active booking and otherwise the nearest upcoming pending or confirmed booking. Cancellation is ownership-protected by the backend and requires a custom destructive confirmation dialog in the frontend.

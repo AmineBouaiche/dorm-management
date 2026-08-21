@@ -8,6 +8,8 @@ export const APP_CONFIG = Object.freeze({
     register: "/register",
     session: "/session",
     rooms: "/rooms",
+    bookings: "/bookings",
+    account: "/account",
     bookingConfirm: "/booking/confirm",
     adminSession: "/admin/session",
   }),
