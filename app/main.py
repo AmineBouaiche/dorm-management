@@ -17,7 +17,7 @@ from app.core.config import settings
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_ROOT = PROJECT_ROOT / "frontend"
 
-app = FastAPI(title=settings.app_name, version="0.5.5")
+app = FastAPI(title=settings.app_name, version="0.5.6")
 app.include_router(auth_router, prefix="/api")
 app.include_router(buildings_router, prefix="/api")
 app.include_router(rooms_router, prefix="/api")
@@ -56,6 +56,41 @@ def frontend_session() -> FileResponse:
 @app.get("/admin/session", include_in_schema=False)
 def frontend_admin_session() -> FileResponse:
     return FileResponse(FRONTEND_ROOT / "admin-session.html")
+
+
+@app.get("/admin", include_in_schema=False)
+def frontend_admin_overview() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "overview.html")
+
+
+@app.get("/admin/rooms", include_in_schema=False)
+def frontend_admin_rooms() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "rooms.html")
+
+
+@app.get("/admin/residences", include_in_schema=False)
+def frontend_admin_residences() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "residences.html")
+
+
+@app.get("/admin/students", include_in_schema=False)
+def frontend_admin_students() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "students.html")
+
+
+@app.get("/admin/students/{student_id}", include_in_schema=False)
+def frontend_admin_student_detail(student_id: int) -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "student-detail.html")
+
+
+@app.get("/admin/bookings", include_in_schema=False)
+def frontend_admin_bookings() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "bookings.html")
+
+
+@app.get("/admin/bookings/{booking_id}", include_in_schema=False)
+def frontend_admin_booking_detail(booking_id: int) -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "admin" / "booking-detail.html")
 
 
 @app.get("/rooms", include_in_schema=False)

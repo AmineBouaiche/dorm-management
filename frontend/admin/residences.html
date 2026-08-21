@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Residences | Residence</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <div data-admin-navigation></div>
+  <main class="page" data-admin-page hidden>
+    <div class="container">
+      <header class="page-header"><h1>Residences</h1><p class="page-header__description">Manage residence details and catalogue availability.</p></header>
+      <div class="admin-section-header"><div></div><button class="button button--primary" type="button" data-add-building>Add residence</button></div><div data-building-message hidden></div><div data-buildings-table></div>
+      <dialog class="admin-dialog" data-building-dialog><form method="dialog" class="stack" data-building-form><div class="admin-dialog__header"><h2 data-building-form-title>Add residence</h2><button class="button button--text" type="button" data-close-building-form>Close</button></div><input type="hidden" data-building-id /><label class="field"><span class="field__label">Name</span><input class="input" data-building-name required maxlength="150" /></label><label class="field"><span class="field__label">Address</span><input class="input" data-building-address required maxlength="255" /></label><label class="field"><span class="field__label">Representative image path</span><input class="input" data-building-image placeholder="/static/assets/residences/..." /></label><label class="check-row"><input type="checkbox" data-building-active checked /> Active</label><p class="field__error" data-building-error hidden></p><div class="dialog__actions"><button class="button button--secondary" type="button" data-close-building-form>Cancel</button><button class="button button--primary" type="submit" data-building-submit>Save residence</button></div></form></dialog>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/admin/residences.js"></script>
+</body>
+</html>

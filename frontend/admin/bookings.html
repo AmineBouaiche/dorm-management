@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Bookings | Residence</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <div data-admin-navigation></div>
+  <main class="page" data-admin-page hidden>
+    <div class="container">
+      <header class="page-header"><h1>Bookings</h1><p class="page-header__description">Manage accommodation requests.</p></header>
+      <div class="admin-toolbar"><div class="admin-filters"><label class="field"><span class="field__label">Search</span><input class="input" type="search" data-booking-search placeholder="Student, student ID or room" /></label><label class="field"><span class="field__label">Status</span><select class="select" data-status-filter><option value="">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select></label><label class="field"><span class="field__label">Residence</span><select class="select" data-booking-building><option value="">All residences</option></select></label></div></div><div data-bookings-table></div>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/admin/bookings.js"></script>
+</body>
+</html>

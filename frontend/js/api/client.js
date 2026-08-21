@@ -106,3 +106,17 @@ export function listMyBookings() {
 export function cancelBooking(bookingId) {
   return apiRequest(`/bookings/${bookingId}/cancel`, { method: "PATCH" });
 }
+
+
+// Administrative API
+export function getAdminAnalytics() { return apiRequest("/admin/analytics"); }
+export function listAdminBuildings() { return apiRequest("/admin/buildings"); }
+export function listAdminRooms() { return apiRequest("/admin/rooms"); }
+export function listAdminStudents() { return apiRequest("/admin/students"); }
+export function listAdminBookings() { return apiRequest("/admin/bookings"); }
+export function createBuilding(data) { return apiRequest("/buildings", { method: "POST", body: JSON.stringify(data) }); }
+export function updateBuilding(id, data) { return apiRequest(`/buildings/${id}`, { method: "PATCH", body: JSON.stringify(data) }); }
+export function createRoom(data) { return apiRequest("/rooms", { method: "POST", body: JSON.stringify(data) }); }
+export function updateRoom(id, data) { return apiRequest(`/rooms/${id}`, { method: "PATCH", body: JSON.stringify(data) }); }
+export function confirmAdminBooking(id) { return apiRequest(`/admin/bookings/${id}/confirm`, { method: "PATCH" }); }
+export function cancelAdminBooking(id) { return apiRequest(`/admin/bookings/${id}/cancel`, { method: "PATCH" }); }

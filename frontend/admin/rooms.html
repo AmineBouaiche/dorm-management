@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Rooms | Residence</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <div data-admin-navigation></div>
+  <main class="page" data-admin-page hidden>
+    <div class="container">
+      <header class="page-header"><h1>Rooms</h1><p class="page-header__description">Manage accommodation inventory.</p></header>
+      <div class="admin-toolbar"><div class="admin-filters"><label class="field"><span class="field__label">Search</span><input class="input" type="search" data-room-search placeholder="Room or residence" /></label><label class="field"><span class="field__label">Residence</span><select class="select" data-building-filter><option value="">All residences</option></select></label><label class="field"><span class="field__label">Type</span><select class="select" data-type-filter><option value="">All types</option><option value="single">Single</option><option value="shared">Shared</option><option value="studio">Studio</option></select></label></div><div class="admin-toolbar__actions"><a class="button button--secondary" href="/admin/residences">Manage residences</a><button class="button button--primary" type="button" data-add-room>Add room</button></div></div>
+      <div data-room-message hidden></div><div data-rooms-table></div>
+      <dialog class="admin-dialog" data-room-dialog><form method="dialog" class="stack" data-room-form><div class="admin-dialog__header"><h2 data-room-form-title>Add room</h2><button class="button button--text" value="cancel" type="button" data-close-room-form>Close</button></div><input type="hidden" data-room-id /><label class="field"><span class="field__label">Residence</span><select class="select" data-room-building required></select></label><label class="field"><span class="field__label">Room number</span><input class="input" data-room-number required maxlength="20" /></label><label class="field"><span class="field__label">Room type</span><select class="select" data-room-type required><option value="single">Single</option><option value="shared">Shared</option><option value="studio">Studio</option></select></label><label class="field"><span class="field__label">Capacity</span><input class="input" type="number" min="1" data-room-capacity required /></label><label class="field"><span class="field__label">Weekly rate</span><input class="input" type="number" min="0" step="0.01" data-room-rate required /></label><label class="check-row"><input type="checkbox" data-room-active checked /> Active</label><p class="field__error" data-room-error hidden></p><div class="dialog__actions"><button class="button button--secondary" type="button" data-close-room-form>Cancel</button><button class="button button--primary" type="submit" data-room-submit>Save room</button></div></form></dialog>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/admin/rooms.js"></script>
+</body>
+</html>

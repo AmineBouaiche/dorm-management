@@ -11,6 +11,6 @@ export const APP_CONFIG = Object.freeze({
     bookings: "/bookings",
     account: "/account",
     bookingConfirm: "/booking/confirm",
-    adminSession: "/admin/session",
+    adminSession: "/admin",
   }),
 });

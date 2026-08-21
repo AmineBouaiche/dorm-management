@@ -207,3 +207,8 @@ The student room-detail handoff now continues through an authenticated confirmat
 ## Phase 5B.5 student experience
 
 The student frontend now includes the real dashboard, My Bookings, booking details, cancellation flow, and account page. The dashboard prioritises an active booking and otherwise the nearest upcoming pending or confirmed booking. Cancellation is ownership-protected by the backend and requires a custom destructive confirmation dialog in the frontend.
+
+
+## Admin interface
+
+Authenticated administrators use `/admin` for the operational interface. It includes the accommodation overview, room and residence inventory management, student records, booking management, and confirmed-revenue analytics. Inventory is retired through active/inactive state rather than hard deletion so historical bookings remain intact.

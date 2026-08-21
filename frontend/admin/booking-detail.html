@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Booking | Residence</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <div data-admin-navigation></div>
+  <main class="page" data-admin-page hidden>
+    <div class="container">
+      <header class="page-header"><h1>Booking</h1><p class="page-header__description">Review and manage this accommodation request.</p></header>
+      <div data-booking-detail><div class="panel stack"><div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line"></div></div></div><dialog class="admin-dialog" data-cancel-dialog><div><h2>Cancel booking</h2><p>Are you sure you want to cancel this booking?</p><div class="dialog__actions"><button class="button button--secondary" type="button" data-keep-booking>Keep booking</button><button class="button button--danger" type="button" data-confirm-cancel>Cancel booking</button></div></div></dialog>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/admin/booking-detail.js"></script>
+</body>
+</html>
