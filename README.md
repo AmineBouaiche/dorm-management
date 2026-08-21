@@ -1,5 +1,7 @@
 # Dorm Management System
 
+[![CI](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml/badge.svg)](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml)
+
 A backend-first dormitory management platform built with FastAPI and PostgreSQL. The project models residences, rooms, students and bookings, with transaction-safe booking constraints, JWT authentication and role-based authorization.
 
 ## Stack
@@ -67,6 +69,11 @@ A residence also has an optional `image_url`, intended to point to its represent
 ## Booking integrity
 
 Pending and confirmed bookings block overlapping room/date ranges. A student also cannot hold overlapping active bookings across different rooms. PostgreSQL exclusion constraints are the final concurrency-safe enforcement layer; service-level checks provide readable API errors.
+
+
+## Continuous integration
+
+GitHub Actions runs on pushes and pull requests targeting `main`. The CI job provisions PostgreSQL 17, installs Python 3.13 dependencies, applies Alembic migrations, executes the full pytest suite, and runs Ruff.
 
 ## Local setup
 
