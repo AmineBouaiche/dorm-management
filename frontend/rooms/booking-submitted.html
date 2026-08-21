@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking submitted | Residence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <main class="page" data-submitted-page hidden>
+    <div class="container container--narrow">
+      <header class="page-header">
+        <h1>Booking submitted</h1>
+        <p class="page-header__description">Your accommodation request has been submitted for review.</p>
+      </header>
+      <div class="message message--error" data-submitted-error hidden><strong>We could not load this booking.</strong><p data-submitted-error-text></p></div>
+      <section class="panel" data-submitted-content aria-live="polite">
+        <div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/booking-submitted.js"></script>
+</body>
+</html>

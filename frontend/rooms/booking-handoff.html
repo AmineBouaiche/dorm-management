@@ -1,1 +1,41 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Booking | Residence</title><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/><link rel="stylesheet" href="/static/css/tokens.css"/><link rel="stylesheet" href="/static/css/base.css"/><link rel="stylesheet" href="/static/css/layout.css"/><link rel="stylesheet" href="/static/css/components.css"/></head><body><div data-primary-navigation></div><main class="page" data-handoff-page hidden><div class="container"><header class="page-header"><h1>Confirm your booking</h1><p class="page-header__description">The booking confirmation workflow is the next implementation milestone.</p></header><div class="panel"><p>Your room and stay selection have been preserved. No booking has been submitted.</p><a class="button button--secondary" data-return-room href="/rooms">Back to room</a></div></div></main><script type="module" src="/static/js/pages/booking-handoff.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirm booking | Residence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <main class="page" data-confirm-page hidden>
+    <div class="container container--narrow">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/rooms">Rooms</a><span>/</span><a data-room-link href="/rooms">Room</a><span>/</span><span>Confirm</span>
+      </nav>
+      <header class="page-header">
+        <h1>Confirm your booking</h1>
+        <p class="page-header__description">Review your accommodation details before submitting your booking request.</p>
+      </header>
+
+      <div class="message message--error" data-confirm-error hidden>
+        <strong data-confirm-error-title>We could not submit this booking.</strong>
+        <p data-confirm-error-text></p>
+      </div>
+
+      <section class="panel" data-confirm-content aria-live="polite">
+        <div class="skeleton skeleton--line"></div>
+        <div class="skeleton skeleton--line"></div>
+        <div class="skeleton skeleton--line"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/booking-handoff.js"></script>
+</body>
+</html>

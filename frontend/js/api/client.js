@@ -90,3 +90,15 @@ export function listAvailableRooms(startDate, endDate) {
 export function getRoom(roomId) {
   return apiRequest(`/rooms/${roomId}`);
 }
+
+
+export function createBooking(data) {
+  return apiRequest("/bookings", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function listMyBookings() {
+  return apiRequest("/bookings/me");
+}

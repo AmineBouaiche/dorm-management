@@ -198,3 +198,8 @@ python scripts/seed_demo_data.py
 ```
 
 This creates or refreshes North Hall, West Court, Riverside House, and Clifton Lodge with approximately 32 synthetic rooms using realistic weekly rates. The data is for local development/demo use only.
+
+
+## Phase 5B.4 booking workflow
+
+The student room-detail handoff now continues through an authenticated confirmation page and submits to the real `POST /api/bookings` endpoint. The confirmation page rechecks availability, displays billable weeks and an estimated total, disables duplicate submissions, and maps booking conflicts to domain-specific messages. Successful requests route to `/booking/submitted`, where the persisted booking is reloaded from `/api/bookings/me` and shown with its server-calculated amount and pending status.
