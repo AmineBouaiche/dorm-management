@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 from app.models.enums import UserRole
+
+if TYPE_CHECKING:
+    from app.models.student import Student
 
 
 class User(Base):

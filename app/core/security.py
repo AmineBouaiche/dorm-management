@@ -56,19 +56,27 @@ def create_access_token(user_id: int) -> str:
     now = datetime.now(UTC)
     payload = {
         "sub": str(user_id),
+        "iss": settings.jwt_issuer,
+        "aud": settings.jwt_audience,
         "iat": now,
         "exp": now + timedelta(minutes=settings.access_token_expire_minutes),
     }
-    return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    return jwt.encode(
+        payload,
+        settings.jwt_secret_key.get_secret_value(),
+        algorithm=settings.jwt_algorithm,
+    )
 
 
 def decode_access_token(token: str) -> int:
     try:
         payload = jwt.decode(
             token,
-            settings.jwt_secret_key,
+            settings.jwt_secret_key.get_secret_value(),
             algorithms=[settings.jwt_algorithm],
-            options={"require": ["sub", "exp", "iat"]},
+            issuer=settings.jwt_issuer,
+            audience=settings.jwt_audience,
+            options={"require": ["sub", "iss", "aud", "exp", "iat"]},
         )
         return int(payload["sub"])
     except (jwt.PyJWTError, ValueError, TypeError, KeyError) as exc:

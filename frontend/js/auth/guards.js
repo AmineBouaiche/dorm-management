@@ -3,7 +3,7 @@ import { APP_CONFIG } from "../config.js";
 import { clearAccessToken, hasAccessToken } from "./session.js";
 
 function destinationFor(user) {
-  return user.role === "admin" ? APP_CONFIG.routes.adminSession : APP_CONFIG.routes.home;
+  return user.role === "admin" ? APP_CONFIG.routes.adminHome : APP_CONFIG.routes.home;
 }
 
 export async function redirectAuthenticatedUser() {

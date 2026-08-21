@@ -20,15 +20,13 @@ def test_login_and_registration_pages_are_served() -> None:
     assert 'data-register-form' in register.text
 
 
-def test_protected_session_checkpoints_are_served() -> None:
+def test_deprecated_session_checkpoints_are_removed() -> None:
     with TestClient(app) as client:
         student = client.get("/session")
         admin = client.get("/admin/session")
 
-    assert student.status_code == 200
-    assert "Authentication verified" in student.text
-    assert admin.status_code == 200
-    assert "Administration access verified" in admin.text
+    assert student.status_code == 404
+    assert admin.status_code == 404
 
 
 def test_auth_frontend_uses_tab_scoped_token_storage() -> None:

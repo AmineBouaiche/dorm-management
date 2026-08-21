@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
 from app.db.database import get_db
-from app.models.user import User
 from app.schemas.admin import AdminAnalytics
 from app.schemas.building import BuildingRead
 from app.schemas.room import RoomRead

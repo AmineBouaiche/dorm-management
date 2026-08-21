@@ -40,4 +40,4 @@ def test_admin_inventory_supports_updates_without_delete():
 
 def test_admin_role_now_redirects_to_real_overview():
     config = (FRONTEND / "js/config.js").read_text(encoding="utf-8")
-    assert 'adminSession: "/admin"' in config
+    assert 'adminHome: "/admin"' in config

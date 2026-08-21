@@ -510,3 +510,7 @@
 .button--danger { color:#fff; background:var(--color-error); border-color:var(--color-error); }
 @media (max-width:56.1875rem){ .admin-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.admin-metric:nth-child(2){border-right:0}.admin-metric:nth-child(-n+2){border-bottom:var(--border-width) solid var(--color-border)}.admin-toolbar{align-items:stretch;flex-direction:column}.admin-toolbar__actions{justify-content:flex-end} }
 @media (max-width:39.9375rem){ .admin-metrics{grid-template-columns:1fr}.admin-metric{border-right:0;border-bottom:var(--border-width) solid var(--color-border)}.admin-metric:last-child{border-bottom:0}.admin-status-summary,.admin-section-header,.admin-toolbar__actions{align-items:stretch;flex-direction:column}.admin-toolbar__actions .button{width:100%} }
+
+.room-detail__actions {
+  margin-top: var(--space-5);
+}

@@ -23,9 +23,12 @@ def main() -> None:
             building = db.scalar(select(Building).where(Building.name == name))
             if building is None:
                 building = Building(name=name, address=address, image_url=image_url, is_active=True)
-                db.add(building); db.flush()
+                db.add(building)
+                db.flush()
             else:
-                building.address = address; building.image_url = image_url; building.is_active = True
+                building.address = address
+                building.image_url = image_url
+                building.is_active = True
             for number, room_type, capacity in ROOM_PLAN:
                 room_number = f"{prefix}{number}"
                 room = db.scalar(select(Room).where(Room.building_id == building.id, Room.room_number == room_number))
@@ -36,4 +39,5 @@ def main() -> None:
     finally:
         db.close()
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()

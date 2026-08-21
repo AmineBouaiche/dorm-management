@@ -212,3 +212,36 @@ The student frontend now includes the real dashboard, My Bookings, booking detai
 ## Admin interface
 
 Authenticated administrators use `/admin` for the operational interface. It includes the accommodation overview, room and residence inventory management, student records, booking management, and confirmed-revenue analytics. Inventory is retired through active/inactive state rather than hard deletion so historical bookings remain intact.
+
+## Production hardening
+
+The application distinguishes development and production configuration through `ENVIRONMENT`.
+Production startup rejects placeholder or short JWT secrets, API documentation is disabled, and the
+development-only style guide is not routed. JWTs validate issuer, audience, issue time, and expiry
+claims in addition to the user subject.
+
+Every HTTP response receives baseline browser security headers including a Content Security Policy,
+clickjacking protection, MIME-sniffing protection, a restrictive permissions policy, and a referrer
+policy. The frontend and API are intentionally same-origin, so permissive CORS is not enabled.
+
+Before production deployment, set at least:
+
+```env
+ENVIRONMENT=production
+DATABASE_URL=postgresql+psycopg://...
+JWT_SECRET_KEY=<unique-random-secret-at-least-32-characters>
+```
+
+Development helpers such as `/docs`, `/redoc`, `/openapi.json`, and `/style-guide` are available only
+outside production where applicable.
+
+### Code quality
+
+Ruff configuration is included in `pyproject.toml`. Run:
+
+```powershell
+ruff check .
+pytest
+```
+
+before committing a milestone.

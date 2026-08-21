@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, Date, DateTime, Enum, ForeignKey, Numeric, func, text
 from sqlalchemy.dialects.postgresql import ExcludeConstraint
@@ -7,6 +8,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 from app.models.enums import BookingStatus
+
+if TYPE_CHECKING:
+    from app.models.room import Room
+    from app.models.student import Student
 
 
 class Booking(Base):
