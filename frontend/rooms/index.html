@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rooms | Residence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+</head>
+<body>
+  <div data-primary-navigation></div>
+  <main class="page" data-room-page hidden>
+    <div class="container">
+      <header class="page-header">
+        <h1>Rooms</h1>
+        <p class="page-header__description">Find accommodation available for your stay.</p>
+      </header>
+
+      <form class="search-panel" data-room-search>
+        <div class="search-grid">
+          <label class="field"><span class="field__label">Arrival</span><input class="input" type="date" name="start_date" /></label>
+          <label class="field"><span class="field__label">Departure</span><input class="input" type="date" name="end_date" /></label>
+          <label class="field"><span class="field__label">Room type</span><select class="select" name="room_type"><option value="">Any type</option><option value="single">Single</option><option value="shared">Shared</option><option value="studio">Studio</option></select></label>
+          <label class="field"><span class="field__label">Residence</span><select class="select" name="building_id" data-building-filter><option value="">Any residence</option></select></label>
+          <button class="button button--primary" type="submit" data-search-button>Search</button>
+        </div>
+        <p class="field__error" data-search-error hidden></p>
+      </form>
+
+      <section class="section" aria-live="polite">
+        <div class="room-results-bar">
+          <div><strong data-result-count>Loading rooms...</strong><div class="field__hint" data-availability-note></div></div>
+        </div>
+        <div class="room-grid" data-room-results></div>
+        <div class="message" data-empty-state hidden><strong>No rooms available</strong><p>No accommodation matches the selected dates and filters.</p></div>
+        <div class="message message--error" data-error-state hidden><strong>We couldn't load the rooms.</strong><p data-error-text>Try again.</p><button class="button button--secondary" type="button" data-retry>Try again</button></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/static/js/pages/rooms.js"></script>
+</body>
+</html>

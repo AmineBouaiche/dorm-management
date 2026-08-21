@@ -17,7 +17,7 @@ from app.core.config import settings
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_ROOT = PROJECT_ROOT / "frontend"
 
-app = FastAPI(title=settings.app_name, version="0.5.2")
+app = FastAPI(title=settings.app_name, version="0.5.3")
 app.include_router(auth_router, prefix="/api")
 app.include_router(buildings_router, prefix="/api")
 app.include_router(rooms_router, prefix="/api")
@@ -56,6 +56,21 @@ def frontend_session() -> FileResponse:
 @app.get("/admin/session", include_in_schema=False)
 def frontend_admin_session() -> FileResponse:
     return FileResponse(FRONTEND_ROOT / "admin-session.html")
+
+
+@app.get("/rooms", include_in_schema=False)
+def frontend_rooms() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "rooms" / "index.html")
+
+
+@app.get("/rooms/{room_id}", include_in_schema=False)
+def frontend_room_detail(room_id: int) -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "rooms" / "detail.html")
+
+
+@app.get("/booking/confirm", include_in_schema=False)
+def frontend_booking_handoff() -> FileResponse:
+    return FileResponse(FRONTEND_ROOT / "rooms" / "booking-handoff.html")
 
 
 @app.get("/health", tags=["system"])

@@ -77,3 +77,16 @@ export async function login(email, password) {
     body,
   });
 }
+
+export function listRooms() {
+  return apiRequest("/rooms");
+}
+
+export function listAvailableRooms(startDate, endDate) {
+  const params = new URLSearchParams({ start_date: startDate, end_date: endDate });
+  return apiRequest(`/rooms/available?${params}`);
+}
+
+export function getRoom(roomId) {
+  return apiRequest(`/rooms/${roomId}`);
+}

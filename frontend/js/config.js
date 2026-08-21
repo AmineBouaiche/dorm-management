@@ -7,6 +7,8 @@ export const APP_CONFIG = Object.freeze({
     login: "/login",
     register: "/register",
     session: "/session",
+    rooms: "/rooms",
+    bookingConfirm: "/booking/confirm",
     adminSession: "/admin/session",
   }),
 });

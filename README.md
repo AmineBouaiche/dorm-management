@@ -186,3 +186,15 @@ Development routes:
 - `/style-guide` - frontend foundation reference
 
 The session checkpoint pages are intentionally temporary. They validate authentication infrastructure without pre-empting the locked student dashboard and admin interface designs.
+
+## Student room discovery milestone
+
+The student-facing room discovery flow is available at `/rooms` and remains framework-free. It includes arrival/departure availability search, room type and residence filters, responsive residence-image cards, room detail pages, weekly-rate presentation, estimated totals, and explicit loading/empty/error handling. Room detail carries a selected stay to `/booking/confirm`, but Phase 5B.3 deliberately does not submit bookings yet.
+
+The repository includes four local representative residence assets and an idempotent development seed script. With the development database running and migrations applied, populate the catalogue with:
+
+```powershell
+python scripts/seed_demo_data.py
+```
+
+This creates or refreshes North Hall, West Court, Riverside House, and Clifton Lodge with approximately 32 synthetic rooms using realistic weekly rates. The data is for local development/demo use only.

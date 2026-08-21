@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+<title id="title">West Court representative residence</title><desc id="desc">A restrained architectural illustration of a courtyard residence.</desc>
+<rect width="1200" height="720" fill="#edf0f4"/><rect y="535" width="1200" height="185" fill="#d8dee6"/>
+<rect x="110" y="215" width="980" height="330" fill="#ffffff" stroke="#bbc4cf" stroke-width="5"/>
+<rect x="110" y="165" width="980" height="55" fill="#071a3d"/>
+<g fill="#d2dbe7" stroke="#a4b0bf" stroke-width="3"><rect x="180" y="285" width="110" height="80"/><rect x="345" y="285" width="110" height="80"/><rect x="745" y="285" width="110" height="80"/><rect x="910" y="285" width="110" height="80"/><rect x="180" y="405" width="110" height="80"/><rect x="910" y="405" width="110" height="80"/></g>
+<rect x="480" y="270" width="240" height="275" fill="#0018a8"/><rect x="555" y="360" width="90" height="185" fill="#f2f4f7"/>
+</svg>
