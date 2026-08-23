@@ -57,9 +57,18 @@ def _constraint_name(exc: IntegrityError) -> str | None:
     return getattr(diag, "constraint_name", None)
 
 
-def list_bookings(db: Session) -> list[Booking]:
-    statement = _booking_query().order_by(Booking.created_at.desc(), Booking.id.desc())
+def list_bookings(db: Session, *, offset: int = 0, limit: int = 100) -> list[Booking]:
+    statement = (
+        _booking_query()
+        .order_by(Booking.created_at.desc(), Booking.id.desc())
+        .offset(offset)
+        .limit(limit)
+    )
     return list(db.scalars(statement).all())
+
+
+def count_bookings(db: Session) -> int:
+    return int(db.scalar(select(func.count(Booking.id))) or 0)
 
 
 def get_booking(db: Session, booking_id: int) -> Booking:
@@ -69,13 +78,23 @@ def get_booking(db: Session, booking_id: int) -> Booking:
     return booking
 
 
-def list_student_bookings_by_db_id(db: Session, student_id: int) -> list[Booking]:
+def list_student_bookings_by_db_id(
+    db: Session, student_id: int, *, offset: int = 0, limit: int = 100
+) -> list[Booking]:
     statement = (
         _booking_query()
         .where(Booking.student_id == student_id)
         .order_by(Booking.start_date.desc(), Booking.id.desc())
+        .offset(offset)
+        .limit(limit)
     )
     return list(db.scalars(statement).all())
+
+
+def count_student_bookings_by_db_id(db: Session, student_id: int) -> int:
+    return int(
+        db.scalar(select(func.count(Booking.id)).where(Booking.student_id == student_id)) or 0
+    )
 
 
 def list_student_bookings(db: Session, student_identifier: str) -> list[Booking]:

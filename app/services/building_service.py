@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -14,12 +14,24 @@ class BuildingAlreadyExistsError(Exception):
     pass
 
 
-def list_buildings(db: Session, *, active_only: bool = True) -> list[Building]:
+def list_buildings(
+    db: Session, *, active_only: bool = True, offset: int = 0, limit: int = 100
+) -> list[Building]:
     statement = select(Building)
     if active_only:
         statement = statement.where(Building.is_active.is_(True))
-    statement = statement.order_by(Building.name)
+    statement = (
+        statement.order_by(Building.name, Building.id).offset(offset).limit(limit)
+    )
     return list(db.scalars(statement).all())
+
+
+
+def count_buildings(db: Session, *, active_only: bool = True) -> int:
+    statement = select(func.count(Building.id))
+    if active_only:
+        statement = statement.where(Building.is_active.is_(True))
+    return int(db.scalar(statement) or 0)
 
 
 def get_building(db: Session, building_id: int) -> Building:

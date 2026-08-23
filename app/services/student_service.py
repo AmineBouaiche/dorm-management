@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -21,9 +21,13 @@ def _student_query():
     return select(Student).options(joinedload(Student.user))
 
 
-def list_students(db: Session) -> list[Student]:
-    statement = _student_query().order_by(Student.student_id)
+def list_students(db: Session, *, offset: int = 0, limit: int = 100) -> list[Student]:
+    statement = _student_query().order_by(Student.student_id, Student.id).offset(offset).limit(limit)
     return list(db.scalars(statement).all())
+
+
+def count_students(db: Session) -> int:
+    return int(db.scalar(select(func.count(Student.id))) or 0)
 
 
 def get_student(db: Session, student_id: str) -> Student:

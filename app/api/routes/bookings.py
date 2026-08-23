@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_student
+from app.core.pagination import Pagination, add_pagination_headers, pagination_params
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingRead
@@ -33,10 +34,19 @@ def create_booking(
 
 @router.get("/me", response_model=list[BookingRead])
 def list_my_bookings(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
     current_user: User = Depends(require_student),
     db: Session = Depends(get_db),
 ) -> list[BookingRead]:
-    return booking_service.list_student_bookings_by_db_id(db, current_user.student.id)
+    total = booking_service.count_student_bookings_by_db_id(db, current_user.student.id)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return booking_service.list_student_bookings_by_db_id(
+        db,
+        current_user.student.id,
+        offset=pagination.offset,
+        limit=pagination.per_page,
+    )
 
 
 @router.patch("/{booking_id}/cancel", response_model=BookingRead)

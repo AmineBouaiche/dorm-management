@@ -288,3 +288,8 @@ Frontend dynamic values are HTML-escaped before template insertion, and the prod
 The API enforces a 64 KiB request-body ceiling because the application has no upload endpoints. Authentication failures are throttled with sliding windows keyed by both client IP and normalized account identifier, while registration is throttled by client IP. Rate-limit responses use HTTP 429 and include `Retry-After`.
 
 The current limiter is intentionally process-local and is valid for the single-Uvicorn-worker deployment profile in this repository. A multi-instance deployment must replace it with a shared limiter store before scaling out.
+
+
+## Security 6.S2B: API and data resilience
+
+Collection endpoints are bounded with `page` and `per_page` query parameters. The maximum page size is 100 and responses include `X-Total-Count`, `X-Page`, and `X-Per-Page` headers. Ordering is deterministic. Production assigns an `X-Request-ID` correlation identifier to responses and converts unhandled application exceptions into a generic JSON 500 response while logging only request metadata and the server-side exception.

@@ -1,10 +1,11 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
+from app.core.pagination import Pagination, add_pagination_headers, pagination_params
 from app.db.database import get_db
 from app.schemas.admin import AdminAnalytics
 from app.schemas.building import BuildingRead
@@ -27,23 +28,56 @@ def _student_to_read(student) -> StudentRead:
 
 
 @router.get("/buildings", response_model=list[BuildingRead])
-def list_all_buildings(db: Session = Depends(get_db)) -> list[BuildingRead]:
-    return building_service.list_buildings(db, active_only=False)
+def list_all_buildings(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[BuildingRead]:
+    total = building_service.count_buildings(db, active_only=False)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return building_service.list_buildings(
+        db, active_only=False, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.get("/rooms", response_model=list[RoomRead])
-def list_all_rooms(db: Session = Depends(get_db)) -> list[RoomRead]:
-    return room_service.list_rooms(db, active_only=False)
+def list_all_rooms(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[RoomRead]:
+    total = room_service.count_rooms(db, active_only=False)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return room_service.list_rooms(
+        db, active_only=False, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.get("/students", response_model=list[StudentRead])
-def list_students(db: Session = Depends(get_db)) -> list[StudentRead]:
-    return [_student_to_read(student) for student in student_service.list_students(db)]
+def list_students(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[StudentRead]:
+    total = student_service.count_students(db)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    students = student_service.list_students(
+        db, offset=pagination.offset, limit=pagination.per_page
+    )
+    return [_student_to_read(student) for student in students]
 
 
 @router.get("/bookings", response_model=list[BookingRead])
-def list_bookings(db: Session = Depends(get_db)) -> list[BookingRead]:
-    return booking_service.list_bookings(db)
+def list_bookings(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[BookingRead]:
+    total = booking_service.count_bookings(db)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return booking_service.list_bookings(
+        db, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.patch("/bookings/{booking_id}/confirm", response_model=BookingRead)

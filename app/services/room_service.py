@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import exists, select
+from sqlalchemy import exists, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -27,12 +27,25 @@ class RoomAlreadyExistsError(Exception):
     pass
 
 
-def list_rooms(db: Session, *, active_only: bool = True) -> list[Room]:
+def list_rooms(
+    db: Session, *, active_only: bool = True, offset: int = 0, limit: int = 100
+) -> list[Room]:
     statement = select(Room).join(Room.building).options(joinedload(Room.building))
     if active_only:
         statement = statement.where(Room.is_active.is_(True), Building.is_active.is_(True))
-    statement = statement.order_by(Room.building_id, Room.room_number)
+    statement = (
+        statement.order_by(Room.building_id, Room.room_number, Room.id)
+        .offset(offset)
+        .limit(limit)
+    )
     return list(db.scalars(statement).all())
+
+
+def count_rooms(db: Session, *, active_only: bool = True) -> int:
+    statement = select(func.count(Room.id)).join(Room.building)
+    if active_only:
+        statement = statement.where(Room.is_active.is_(True), Building.is_active.is_(True))
+    return int(db.scalar(statement) or 0)
 
 
 def get_room(db: Session, room_id: int, *, active_only: bool = True) -> Room:
@@ -102,7 +115,9 @@ def update_room(db: Session, room_id: int, data: RoomUpdate) -> Room:
     return get_room(db, room.id, active_only=False)
 
 
-def list_available_rooms(db: Session, start_date: date, end_date: date) -> list[Room]:
+def list_available_rooms(
+    db: Session, start_date: date, end_date: date, *, offset: int = 0, limit: int = 100
+) -> list[Room]:
     blocking_booking_exists = exists(
         select(Booking.id).where(
             Booking.room_id == Room.id,
@@ -121,6 +136,29 @@ def list_available_rooms(db: Session, start_date: date, end_date: date) -> list[
             Building.is_active.is_(True),
             ~blocking_booking_exists,
         )
-        .order_by(Room.building_id, Room.room_number)
+        .order_by(Room.building_id, Room.room_number, Room.id)
+        .offset(offset)
+        .limit(limit)
     )
     return list(db.scalars(statement).all())
+
+
+def count_available_rooms(db: Session, start_date: date, end_date: date) -> int:
+    blocking_booking_exists = exists(
+        select(Booking.id).where(
+            Booking.room_id == Room.id,
+            Booking.status.in_([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
+            Booking.start_date < end_date,
+            Booking.end_date > start_date,
+        )
+    )
+    statement = (
+        select(func.count(Room.id))
+        .join(Room.building)
+        .where(
+            Room.is_active.is_(True),
+            Building.is_active.is_(True),
+            ~blocking_booking_exists,
+        )
+    )
+    return int(db.scalar(statement) or 0)

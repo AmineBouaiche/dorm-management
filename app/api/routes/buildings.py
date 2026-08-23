@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
+from app.core.pagination import Pagination, add_pagination_headers, pagination_params
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.building import BuildingCreate, BuildingRead, BuildingUpdate
@@ -13,8 +14,16 @@ router = APIRouter(prefix="/buildings", tags=["buildings"])
 
 
 @router.get("", response_model=list[BuildingRead])
-def list_buildings(db: Session = Depends(get_db)) -> list[BuildingRead]:
-    return building_service.list_buildings(db, active_only=True)
+def list_buildings(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[BuildingRead]:
+    total = building_service.count_buildings(db, active_only=True)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return building_service.list_buildings(
+        db, active_only=True, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.post("", response_model=BuildingRead, status_code=status.HTTP_201_CREATED)

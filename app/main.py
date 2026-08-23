@@ -1,7 +1,8 @@
+import logging
 from pathlib import Path
 
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import (
@@ -14,27 +15,50 @@ from app.api.routes import (
 )
 from app.core.config import Settings, settings
 from app.core.csrf import CSRFMiddleware
+from app.core.request_context import RequestIDMiddleware
 from app.core.request_limits import RequestBodyLimitMiddleware
 from app.core.security_headers import SecurityHeadersMiddleware
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_ROOT = PROJECT_ROOT / "frontend"
+LOGGER = logging.getLogger("dorm_management.errors")
 
 
 def create_app(app_settings: Settings = settings) -> FastAPI:
     application = FastAPI(
         title=app_settings.app_name,
-        version="0.8.0",
+        version="0.9.0",
         docs_url=None if app_settings.is_production else "/docs",
         redoc_url=None if app_settings.is_production else "/redoc",
         openapi_url=None if app_settings.is_production else "/openapi.json",
     )
+    application.add_middleware(RequestIDMiddleware)
     application.add_middleware(CSRFMiddleware)
     application.add_middleware(RequestBodyLimitMiddleware, max_body_bytes=app_settings.max_request_body_bytes)
     application.add_middleware(
         SecurityHeadersMiddleware,
         allow_swagger_assets=not app_settings.is_production,
     )
+
+    if app_settings.is_production:
+        @application.exception_handler(Exception)
+        async def production_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+            request_id = getattr(request.state, "request_id", "unknown")
+            LOGGER.error(
+                "Unhandled application error request_id=%s method=%s path=%s error_type=%s",
+                request_id,
+                request.method,
+                request.url.path,
+                type(exc).__name__,
+            )
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "detail": "Internal server error",
+                    "request_id": request_id,
+                },
+                headers={"X-Request-ID": request_id},
+            )
 
     application.include_router(auth_router, prefix="/api")
     application.include_router(buildings_router, prefix="/api")

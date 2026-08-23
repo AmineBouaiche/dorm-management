@@ -1,10 +1,11 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
+from app.core.pagination import Pagination, add_pagination_headers, pagination_params
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.room import AvailabilityWindow, RoomCreate, RoomRead, RoomUpdate
@@ -14,14 +15,24 @@ router = APIRouter(prefix="/rooms", tags=["rooms"])
 
 
 @router.get("", response_model=list[RoomRead])
-def list_rooms(db: Session = Depends(get_db)) -> list[RoomRead]:
-    return room_service.list_rooms(db, active_only=True)
+def list_rooms(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[RoomRead]:
+    total = room_service.count_rooms(db, active_only=True)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return room_service.list_rooms(
+        db, active_only=True, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.get("/available", response_model=list[RoomRead])
 def list_available_rooms(
+    response: Response,
     start_date: date = Query(...),
     end_date: date = Query(...),
+    pagination: Pagination = Depends(pagination_params),
     db: Session = Depends(get_db),
 ) -> list[RoomRead]:
     try:
@@ -32,7 +43,15 @@ def list_available_rooms(
             detail="start_date must be before end_date",
         ) from exc
 
-    return room_service.list_available_rooms(db, window.start_date, window.end_date)
+    total = room_service.count_available_rooms(db, window.start_date, window.end_date)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return room_service.list_available_rooms(
+        db,
+        window.start_date,
+        window.end_date,
+        offset=pagination.offset,
+        limit=pagination.per_page,
+    )
 
 
 @router.get("/{room_id}", response_model=RoomRead)

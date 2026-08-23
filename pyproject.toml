@@ -1,6 +1,6 @@
 [project]
 name = "dorm-management"
-version = "0.8.0"
+version = "0.9.0"
 description = "Dormitory management system built with FastAPI and PostgreSQL."
 requires-python = ">=3.13,<3.14"
 dependencies = [
