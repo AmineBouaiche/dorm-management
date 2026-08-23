@@ -1,18 +1,20 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
 from app.core.pagination import Pagination, add_pagination_headers, pagination_params
 from app.db.database import get_db
+from app.models.user import User
 from app.schemas.admin import AdminAnalytics
+from app.schemas.audit import AuditLogRead
 from app.schemas.building import BuildingRead
 from app.schemas.room import RoomRead
 from app.schemas.booking import BookingRead
 from app.schemas.student import StudentRead
-from app.services import booking_service, building_service, room_service, student_service
+from app.services import audit_service, booking_service, building_service, room_service, student_service
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -81,9 +83,23 @@ def list_bookings(
 
 
 @router.patch("/bookings/{booking_id}/confirm", response_model=BookingRead)
-def confirm_booking(booking_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db)) -> BookingRead:
+def confirm_booking(
+    booking_id: Annotated[int, Path(gt=0)],
+    request: Request,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+) -> BookingRead:
     try:
-        return booking_service.confirm_booking(db, booking_id)
+        booking = booking_service.confirm_booking(db, booking_id)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="booking.confirm",
+            resource_type="booking",
+            resource_id=booking.id,
+            request_id=request.state.request_id,
+        )
+        return booking
     except booking_service.BookingNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found") from exc
     except booking_service.BookingStateError as exc:
@@ -91,13 +107,40 @@ def confirm_booking(booking_id: Annotated[int, Path(gt=0)], db: Session = Depend
 
 
 @router.patch("/bookings/{booking_id}/cancel", response_model=BookingRead)
-def cancel_booking(booking_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db)) -> BookingRead:
+def cancel_booking(
+    booking_id: Annotated[int, Path(gt=0)],
+    request: Request,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+) -> BookingRead:
     try:
-        return booking_service.cancel_booking(db, booking_id)
+        booking = booking_service.cancel_booking(db, booking_id)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="booking.cancel",
+            resource_type="booking",
+            resource_id=booking.id,
+            request_id=request.state.request_id,
+        )
+        return booking
     except booking_service.BookingNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found") from exc
     except booking_service.BookingStateError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Booking is already cancelled") from exc
+
+
+@router.get("/audit-logs", response_model=list[AuditLogRead])
+def list_audit_logs(
+    response: Response,
+    pagination: Pagination = Depends(pagination_params),
+    db: Session = Depends(get_db),
+) -> list[AuditLogRead]:
+    total = audit_service.count_events(db)
+    add_pagination_headers(response, pagination=pagination, total=total)
+    return audit_service.list_events(
+        db, offset=pagination.offset, limit=pagination.per_page
+    )
 
 
 @router.get("/analytics", response_model=AdminAnalytics)

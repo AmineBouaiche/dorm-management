@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -9,7 +9,7 @@ from app.core.pagination import Pagination, add_pagination_headers, pagination_p
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.room import AvailabilityWindow, RoomCreate, RoomRead, RoomUpdate
-from app.services import room_service
+from app.services import audit_service, room_service
 
 router = APIRouter(prefix="/rooms", tags=["rooms"])
 
@@ -65,11 +65,21 @@ def get_room(room_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db))
 @router.post("", response_model=RoomRead, status_code=status.HTTP_201_CREATED)
 def create_room(
     data: RoomCreate,
-    _admin: User = Depends(require_admin),
+    request: Request,
+    admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ) -> RoomRead:
     try:
-        return room_service.create_room(db, data)
+        room = room_service.create_room(db, data)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="room.create",
+            resource_type="room",
+            resource_id=room.id,
+            request_id=request.state.request_id,
+        )
+        return room
     except room_service.BuildingNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found") from exc
     except room_service.InactiveBuildingError as exc:
@@ -85,11 +95,22 @@ def create_room(
 def update_room(
     room_id: Annotated[int, Path(gt=0)],
     data: RoomUpdate,
-    _admin: User = Depends(require_admin),
+    request: Request,
+    admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ) -> RoomRead:
     try:
-        return room_service.update_room(db, room_id, data)
+        room = room_service.update_room(db, room_id, data)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="room.update",
+            resource_type="room",
+            resource_id=room.id,
+            request_id=request.state.request_id,
+            details={"changed_fields": sorted(data.model_dump(exclude_unset=True).keys())},
+        )
+        return room
     except room_service.RoomNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found") from exc
     except room_service.BuildingNotFoundError as exc:

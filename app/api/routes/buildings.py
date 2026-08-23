@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -8,7 +8,7 @@ from app.core.pagination import Pagination, add_pagination_headers, pagination_p
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.building import BuildingCreate, BuildingRead, BuildingUpdate
-from app.services import building_service
+from app.services import audit_service, building_service
 
 router = APIRouter(prefix="/buildings", tags=["buildings"])
 
@@ -29,11 +29,21 @@ def list_buildings(
 @router.post("", response_model=BuildingRead, status_code=status.HTTP_201_CREATED)
 def create_building(
     data: BuildingCreate,
-    _admin: User = Depends(require_admin),
+    request: Request,
+    admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ) -> BuildingRead:
     try:
-        return building_service.create_building(db, data)
+        building = building_service.create_building(db, data)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="building.create",
+            resource_type="building",
+            resource_id=building.id,
+            request_id=request.state.request_id,
+        )
+        return building
     except building_service.BuildingAlreadyExistsError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Building name already exists") from exc
 
@@ -42,11 +52,22 @@ def create_building(
 def update_building(
     building_id: Annotated[int, Path(gt=0)],
     data: BuildingUpdate,
-    _admin: User = Depends(require_admin),
+    request: Request,
+    admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ) -> BuildingRead:
     try:
-        return building_service.update_building(db, building_id, data)
+        building = building_service.update_building(db, building_id, data)
+        audit_service.record_event(
+            db,
+            actor_user_id=admin.id,
+            action="building.update",
+            resource_type="building",
+            resource_id=building.id,
+            request_id=request.state.request_id,
+            details={"changed_fields": sorted(data.model_dump(exclude_unset=True).keys())},
+        )
+        return building
     except building_service.BuildingNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Building not found") from exc
     except building_service.BuildingAlreadyExistsError as exc:

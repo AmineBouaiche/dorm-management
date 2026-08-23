@@ -293,3 +293,9 @@ The current limiter is intentionally process-local and is valid for the single-U
 ## Security 6.S2B: API and data resilience
 
 Collection endpoints are bounded with `page` and `per_page` query parameters. The maximum page size is 100 and responses include `X-Total-Count`, `X-Page`, and `X-Per-Page` headers. Ordering is deterministic. Production assigns an `X-Request-ID` correlation identifier to responses and converts unhandled application exceptions into a generic JSON 500 response while logging only request metadata and the server-side exception.
+
+## Security 6.S2C: observability and accountability
+
+The application keeps operational request logs intentionally sparse. Each HTTP request is logged with only its correlation ID, method, path, response status, and duration. Query strings, request bodies, cookies, authorization headers, passwords, tokens, and user-agent data are not included by the application request logger.
+
+Successful privileged mutations create persistent database audit records. The audit trail currently covers residence creation/updates, room creation/updates, and admin booking confirmation/cancellation. Records contain the acting admin user ID, action, resource type and ID, correlation ID, timestamp, and only minimal non-sensitive metadata such as the names of fields changed. Audit records are available to administrators through the paginated `GET /api/admin/audit-logs` endpoint.
