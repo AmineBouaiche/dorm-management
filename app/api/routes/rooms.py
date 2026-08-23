@@ -1,6 +1,7 @@
 from datetime import date
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -35,7 +36,7 @@ def list_available_rooms(
 
 
 @router.get("/{room_id}", response_model=RoomRead)
-def get_room(room_id: int, db: Session = Depends(get_db)) -> RoomRead:
+def get_room(room_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db)) -> RoomRead:
     try:
         return room_service.get_room(db, room_id, active_only=True)
     except room_service.RoomNotFoundError as exc:
@@ -63,7 +64,7 @@ def create_room(
 
 @router.patch("/{room_id}", response_model=RoomRead)
 def update_room(
-    room_id: int,
+    room_id: Annotated[int, Path(gt=0)],
     data: RoomUpdate,
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),

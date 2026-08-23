@@ -282,3 +282,9 @@ The `app` service is behind the `production` Compose profile, so normal `docker 
 The browser frontend authenticates with a short-lived JWT stored only in a Secure/HttpOnly/SameSite cookie in production. A separate readable CSRF cookie is used with an `X-CSRF-Token` header on state-changing requests. The bearer-token login remains available for development tooling and API clients, but the browser never persists or reads the JWT. New passwords are hashed with Argon2id; legacy PBKDF2 hashes are transparently upgraded after a successful login.
 
 Frontend dynamic values are HTML-escaped before template insertion, and the production CSP remains a defense-in-depth control rather than the primary XSS mitigation. Passwords require 12 to 128 characters.
+
+### Abuse and request-size controls
+
+The API enforces a 64 KiB request-body ceiling because the application has no upload endpoints. Authentication failures are throttled with sliding windows keyed by both client IP and normalized account identifier, while registration is throttled by client IP. Rate-limit responses use HTTP 429 and include `Retry-After`.
+
+The current limiter is intentionally process-local and is valid for the single-Uvicorn-worker deployment profile in this repository. A multi-instance deployment must replace it with a shared limiter store before scaling out.

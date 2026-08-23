@@ -19,6 +19,8 @@ class BookingCreate(BaseModel):
     def validate_date_range(self) -> "BookingCreate":
         if self.start_date >= self.end_date:
             raise ValueError("start_date must be before end_date")
+        if (self.end_date - self.start_date).days > 730:
+            raise ValueError("booking period cannot exceed 730 days")
         return self
 
 

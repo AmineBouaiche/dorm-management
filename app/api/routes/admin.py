@@ -1,6 +1,7 @@
 from datetime import date
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -46,7 +47,7 @@ def list_bookings(db: Session = Depends(get_db)) -> list[BookingRead]:
 
 
 @router.patch("/bookings/{booking_id}/confirm", response_model=BookingRead)
-def confirm_booking(booking_id: int, db: Session = Depends(get_db)) -> BookingRead:
+def confirm_booking(booking_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db)) -> BookingRead:
     try:
         return booking_service.confirm_booking(db, booking_id)
     except booking_service.BookingNotFoundError as exc:
@@ -56,7 +57,7 @@ def confirm_booking(booking_id: int, db: Session = Depends(get_db)) -> BookingRe
 
 
 @router.patch("/bookings/{booking_id}/cancel", response_model=BookingRead)
-def cancel_booking(booking_id: int, db: Session = Depends(get_db)) -> BookingRead:
+def cancel_booking(booking_id: Annotated[int, Path(gt=0)], db: Session = Depends(get_db)) -> BookingRead:
     try:
         return booking_service.cancel_booking(db, booking_id)
     except booking_service.BookingNotFoundError as exc:

@@ -13,8 +13,8 @@ class RoomCreate(BaseModel):
     building_id: int = Field(gt=0)
     room_number: str = Field(min_length=1, max_length=20)
     room_type: RoomType
-    capacity: int = Field(gt=0)
-    weekly_rate: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
+    capacity: int = Field(gt=0, le=100)
+    weekly_rate: Decimal = Field(ge=0, le=10_000, max_digits=10, decimal_places=2)
 
 
 class RoomUpdate(BaseModel):
@@ -23,8 +23,8 @@ class RoomUpdate(BaseModel):
     building_id: int | None = Field(default=None, gt=0)
     room_number: str | None = Field(default=None, min_length=1, max_length=20)
     room_type: RoomType | None = None
-    capacity: int | None = Field(default=None, gt=0)
-    weekly_rate: Decimal | None = Field(default=None, ge=0, max_digits=10, decimal_places=2)
+    capacity: int | None = Field(default=None, gt=0, le=100)
+    weekly_rate: Decimal | None = Field(default=None, ge=0, le=10_000, max_digits=10, decimal_places=2)
     is_active: bool | None = None
 
 
@@ -49,4 +49,6 @@ class AvailabilityWindow(BaseModel):
     def validate_date_range(self) -> "AvailabilityWindow":
         if self.start_date >= self.end_date:
             raise ValueError("start_date must be before end_date")
+        if (self.end_date - self.start_date).days > 730:
+            raise ValueError("availability window cannot exceed 730 days")
         return self

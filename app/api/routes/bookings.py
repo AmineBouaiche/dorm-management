@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_student
@@ -39,7 +41,7 @@ def list_my_bookings(
 
 @router.patch("/{booking_id}/cancel", response_model=BookingRead)
 def cancel_own_booking(
-    booking_id: int,
+    booking_id: Annotated[int, Path(gt=0)],
     current_user: User = Depends(require_student),
     db: Session = Depends(get_db),
 ) -> BookingRead:

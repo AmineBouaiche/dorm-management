@@ -17,6 +17,7 @@ from alembic.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from app.core.rate_limit import AUTH_RATE_LIMITER
 from app.db.database import engine, get_db
 from app.main import app
 
@@ -50,6 +51,13 @@ def db_session() -> Generator[Session, None, None]:
         session.close()
         transaction.rollback()
         connection.close()
+
+
+@pytest.fixture(autouse=True)
+def reset_auth_rate_limits() -> Generator[None, None, None]:
+    AUTH_RATE_LIMITER.reset()
+    yield
+    AUTH_RATE_LIMITER.reset()
 
 
 @pytest.fixture

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     auth_cookie_name: str = "residence_session"
     csrf_cookie_name: str = "residence_csrf"
-
+    max_request_body_bytes: int = 65_536
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

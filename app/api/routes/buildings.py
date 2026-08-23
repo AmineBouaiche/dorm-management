@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -29,7 +31,7 @@ def create_building(
 
 @router.patch("/{building_id}", response_model=BuildingRead)
 def update_building(
-    building_id: int,
+    building_id: Annotated[int, Path(gt=0)],
     data: BuildingUpdate,
     _admin: User = Depends(require_admin),
     db: Session = Depends(get_db),

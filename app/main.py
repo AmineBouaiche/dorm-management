@@ -14,6 +14,7 @@ from app.api.routes import (
 )
 from app.core.config import Settings, settings
 from app.core.csrf import CSRFMiddleware
+from app.core.request_limits import RequestBodyLimitMiddleware
 from app.core.security_headers import SecurityHeadersMiddleware
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -23,12 +24,13 @@ FRONTEND_ROOT = PROJECT_ROOT / "frontend"
 def create_app(app_settings: Settings = settings) -> FastAPI:
     application = FastAPI(
         title=app_settings.app_name,
-        version="0.7.0",
+        version="0.8.0",
         docs_url=None if app_settings.is_production else "/docs",
         redoc_url=None if app_settings.is_production else "/redoc",
         openapi_url=None if app_settings.is_production else "/openapi.json",
     )
     application.add_middleware(CSRFMiddleware)
+    application.add_middleware(RequestBodyLimitMiddleware, max_body_bytes=app_settings.max_request_body_bytes)
     application.add_middleware(
         SecurityHeadersMiddleware,
         allow_swagger_assets=not app_settings.is_production,
