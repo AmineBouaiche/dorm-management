@@ -299,3 +299,14 @@ Collection endpoints are bounded with `page` and `per_page` query parameters. Th
 The application keeps operational request logs intentionally sparse. Each HTTP request is logged with only its correlation ID, method, path, response status, and duration. Query strings, request bodies, cookies, authorization headers, passwords, tokens, and user-agent data are not included by the application request logger.
 
 Successful privileged mutations create persistent database audit records. The audit trail currently covers residence creation/updates, room creation/updates, and admin booking confirmation/cancellation. Records contain the acting admin user ID, action, resource type and ID, correlation ID, timestamp, and only minimal non-sensitive metadata such as the names of fields changed. Audit records are available to administrators through the paginated `GET /api/admin/audit-logs` endpoint.
+
+## Supply-chain security
+
+The repository uses layered dependency monitoring and CI enforcement:
+
+- Dependabot checks Python dependencies, GitHub Actions, and the Docker base image weekly.
+- CI installs `pip-audit` with the development toolchain and fails when the resolved Python environment contains a known vulnerability reported by the audit service.
+- The workflow keeps the default `GITHUB_TOKEN` read-only and disables persisted checkout credentials because the CI job never pushes changes.
+- Dependency update pull requests still run the full PostgreSQL migration, pytest, Ruff, vulnerability-audit, and production-container build gates before merge.
+
+`pip-audit` requires network access to query vulnerability data. A transient advisory-service outage should be treated as an infrastructure failure rather than bypassed by disabling the security gate.
