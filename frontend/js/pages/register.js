@@ -39,7 +39,7 @@ function validate(data) {
   if (!data.last_name) { setFieldError("last_name", "Enter your last name."); valid = false; }
   if (!data.student_id) { setFieldError("student_id", "Enter your student ID."); valid = false; }
   if (!data.email) { setFieldError("email", "Enter your email address."); valid = false; }
-  if (data.password.length < 8) { setFieldError("password", "Use at least 8 characters."); valid = false; }
+  if (data.password.length < 12) { setFieldError("password", "Use at least 12 characters."); valid = false; }
   if (data.password !== data.confirm_password) { setFieldError("confirm_password", "Passwords do not match."); valid = false; }
   return valid;
 }

@@ -11,8 +11,8 @@ from app.models.user import User
 def main() -> None:
     email = input("Admin email: ").strip().lower()
     password = getpass("Admin password: ")
-    if len(password) < 8:
-        raise SystemExit("Password must be at least 8 characters")
+    if len(password) < 12:
+        raise SystemExit("Password must be at least 12 characters")
 
     with SessionLocal() as db:
         existing = db.scalar(select(User).where(User.email == email))

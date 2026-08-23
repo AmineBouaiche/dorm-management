@@ -1,6 +1,7 @@
 import { ApiError, listMyBookings } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-bookings-page]");
 const content = document.querySelector("[data-bookings-content]");
@@ -26,7 +27,7 @@ function statusMarkup(status) {
 }
 function bookingCard(booking) {
   return `<article class="panel booking-card">
-    <div class="booking-card__top"><div><p class="card__eyebrow">${booking.room.building.name}</p><h3>Room ${booking.room.room_number}</h3></div>${statusMarkup(booking.status)}</div>
+    <div class="booking-card__top"><div><p class="card__eyebrow">${escapeHtml(booking.room.building.name)}</p><h3>Room ${escapeHtml(booking.room.room_number)}</h3></div>${statusMarkup(booking.status)}</div>
     <p class="text-secondary">${humanDate(booking.start_date)} to ${humanDate(booking.end_date)}</p>
     <p>${money(booking.room.weekly_rate)} / week</p>
     <div class="booking-card__action"><a class="text-link" href="/bookings/${booking.id}">View details</a></div>

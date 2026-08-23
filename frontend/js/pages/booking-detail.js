@@ -1,6 +1,7 @@
 import { ApiError, cancelBooking, listMyBookings } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-booking-detail-page]");
 const content = document.querySelector("[data-booking-detail-content]");
@@ -53,10 +54,10 @@ function renderBooking(successMessage = "") {
   const today = new Date().toISOString().slice(0, 10);
   const cancellable = booking.status !== "cancelled" && booking.end_date >= today;
   content.innerHTML = `
-    ${successMessage ? `<div class="message message--success"><strong>${successMessage}</strong></div>` : ""}
-    <header class="booking-detail-header"><div><p class="card__eyebrow">Booking #${booking.id}</p><h1>${booking.room.building.name}, Room ${booking.room.room_number}</h1></div>${statusMarkup(booking.status)}</header>
+    ${successMessage ? `<div class="message message--success"><strong>${escapeHtml(successMessage)}</strong></div>` : ""}
+    <header class="booking-detail-header"><div><p class="card__eyebrow">Booking #${booking.id}</p><h1>${escapeHtml(booking.room.building.name)}, Room ${escapeHtml(booking.room.room_number)}</h1></div>${statusMarkup(booking.status)}</header>
     <section class="section"><h2>Accommodation</h2><dl class="detail-list">
-      <dt>Room</dt><dd>${booking.room.room_number}</dd><dt>Residence</dt><dd>${booking.room.building.name}</dd><dt>Room type</dt><dd>${booking.room.room_type.charAt(0).toUpperCase() + booking.room.room_type.slice(1)}</dd><dt>Weekly rate</dt><dd>${money(booking.room.weekly_rate)}</dd>
+      <dt>Room</dt><dd>${escapeHtml(booking.room.room_number)}</dd><dt>Residence</dt><dd>${escapeHtml(booking.room.building.name)}</dd><dt>Room type</dt><dd>${booking.room.room_type.charAt(0).toUpperCase() + booking.room.room_type.slice(1)}</dd><dt>Weekly rate</dt><dd>${money(booking.room.weekly_rate)}</dd>
     </dl></section>
     <section class="section"><h2>Stay</h2><dl class="detail-list">
       <dt>Arrival</dt><dd>${humanDate(booking.start_date)}</dd><dt>Departure</dt><dd>${humanDate(booking.end_date)}</dd><dt>Billable duration</dt><dd>${weeks} ${weeks === 1 ? "week" : "weeks"}</dd>
@@ -67,7 +68,7 @@ function renderBooking(successMessage = "") {
 }
 
 function openDialog() {
-  cancelSummary.textContent = `${booking.room.building.name}, Room ${booking.room.room_number}. ${humanDate(booking.start_date)} to ${humanDate(booking.end_date)}.`;
+  cancelSummary.textContent = `${escapeHtml(booking.room.building.name)}, Room ${escapeHtml(booking.room.room_number)}. ${humanDate(booking.start_date)} to ${humanDate(booking.end_date)}.`;
   dialog.hidden = false;
   confirmButton.focus();
 }

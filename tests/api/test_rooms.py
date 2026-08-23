@@ -164,11 +164,11 @@ def test_admin_can_update_building_image_and_status(client: TestClient, db_sessi
     updated = client.patch(
         f"/api/buildings/{building_id}",
         headers=bearer(token),
-        json={"image_url": "/assets/residences/image-hall.webp", "is_active": False},
+        json={"image_url": "/static/assets/residences/image-hall.webp", "is_active": False},
     )
 
     assert updated.status_code == 200
-    assert updated.json()["image_url"] == "/assets/residences/image-hall.webp"
+    assert updated.json()["image_url"] == "/static/assets/residences/image-hall.webp"
     assert updated.json()["is_active"] is False
     assert building_id not in {item["id"] for item in client.get("/api/buildings").json()}
 

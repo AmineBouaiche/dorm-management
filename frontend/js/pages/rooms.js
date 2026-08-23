@@ -1,6 +1,7 @@
 import { ApiError, listAvailableRooms, listRooms } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-room-page]");
 const form = document.querySelector("[data-room-search]");
@@ -29,7 +30,7 @@ function queryDates() { const data = new FormData(form); return { start: String(
 function populateBuildings(items) {
   const current = buildingFilter.value;
   const buildings = [...new Map(items.map((room) => [room.building.id, room.building])).values()].sort((a,b) => a.name.localeCompare(b.name));
-  buildingFilter.innerHTML = '<option value="">Any residence</option>' + buildings.map((building) => `<option value="${building.id}">${building.name}</option>`).join("");
+  buildingFilter.innerHTML = '<option value="">Any residence</option>' + buildings.map((building) => `<option value="${building.id}">${escapeHtml(building.name)}</option>`).join("");
   buildingFilter.value = current;
 }
 
@@ -45,7 +46,7 @@ function roomCard(room) {
   const params = new URLSearchParams();
   if (start && end) { params.set("start", start); params.set("end", end); }
   const href = `/rooms/${room.id}${params.size ? `?${params}` : ""}`;
-  return `<article class="card room-card"><img class="room-card__image" src="${imageFor(room)}" alt="Representative view of ${room.building.name}"/><div class="card__body"><p class="card__eyebrow">${room.building.name}</p><h2 class="room-card__title">Room ${room.room_number}</h2><div class="room-card__meta"><span>${title(room.room_type)}</span><span class="room-card__price">${money(room.weekly_rate)} / week</span></div><div class="room-card__action"><a class="text-link" href="${href}">View room</a></div></div></article>`;
+  return `<article class="card room-card"><img class="room-card__image" src="${escapeHtml(imageFor(room))}" alt="Representative view of ${escapeHtml(room.building.name)}"/><div class="card__body"><p class="card__eyebrow">${escapeHtml(room.building.name)}</p><h2 class="room-card__title">Room ${escapeHtml(room.room_number)}</h2><div class="room-card__meta"><span>${title(room.room_type)}</span><span class="room-card__price">${money(room.weekly_rate)} / week</span></div><div class="room-card__action"><a class="text-link" href="${href}">View room</a></div></div></article>`;
 }
 
 function render(items, dated = false) {

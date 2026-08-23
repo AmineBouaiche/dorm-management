@@ -1,16 +1,19 @@
 import base64
 import hashlib
 import hmac
-import secrets
 from datetime import UTC, datetime, timedelta
 
 import jwt
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
 
 from app.core.config import settings
 
 _PBKDF2_ALGORITHM = "sha256"
 _PBKDF2_ITERATIONS = 600_000
-_SALT_BYTES = 16
+_ARGON2 = PasswordHasher(time_cost=3, memory_cost=65_536, parallelism=4, hash_len=32, salt_len=16)
+# Used when an email does not exist so login still performs a real password-hash verification.
+_DUMMY_PASSWORD_HASH = _ARGON2.hash("residence-dummy-password-for-timing-equalisation")
 
 
 class InvalidTokenError(Exception):
@@ -18,21 +21,35 @@ class InvalidTokenError(Exception):
 
 
 def hash_password(password: str) -> str:
-    salt = secrets.token_bytes(_SALT_BYTES)
-    digest = hashlib.pbkdf2_hmac(
-        _PBKDF2_ALGORITHM,
-        password.encode("utf-8"),
-        salt,
-        _PBKDF2_ITERATIONS,
-    )
-    return "pbkdf2_sha256${iterations}${salt}${digest}".format(
-        iterations=_PBKDF2_ITERATIONS,
-        salt=base64.urlsafe_b64encode(salt).decode("ascii"),
-        digest=base64.urlsafe_b64encode(digest).decode("ascii"),
-    )
+    return _ARGON2.hash(password)
 
 
 def verify_password(password: str, encoded_hash: str) -> bool:
+    if encoded_hash.startswith("$argon2"):
+        try:
+            return _ARGON2.verify(encoded_hash, password)
+        except (VerifyMismatchError, VerificationError, InvalidHashError):
+            return False
+    return _verify_legacy_pbkdf2(password, encoded_hash)
+
+
+def password_needs_rehash(encoded_hash: str) -> bool:
+    if not encoded_hash.startswith("$argon2"):
+        return True
+    try:
+        return _ARGON2.check_needs_rehash(encoded_hash)
+    except InvalidHashError:
+        return True
+
+
+def verify_dummy_password(password: str) -> None:
+    try:
+        _ARGON2.verify(_DUMMY_PASSWORD_HASH, password)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        pass
+
+
+def _verify_legacy_pbkdf2(password: str, encoded_hash: str) -> bool:
     try:
         algorithm, iterations_text, salt_text, digest_text = encoded_hash.split("$", 3)
         if algorithm != "pbkdf2_sha256":
@@ -43,12 +60,7 @@ def verify_password(password: str, encoded_hash: str) -> bool:
     except (ValueError, TypeError):
         return False
 
-    actual = hashlib.pbkdf2_hmac(
-        _PBKDF2_ALGORITHM,
-        password.encode("utf-8"),
-        salt,
-        iterations,
-    )
+    actual = hashlib.pbkdf2_hmac(_PBKDF2_ALGORITHM, password.encode("utf-8"), salt, iterations)
     return hmac.compare_digest(actual, expected)
 
 
@@ -61,11 +73,7 @@ def create_access_token(user_id: int) -> str:
         "iat": now,
         "exp": now + timedelta(minutes=settings.access_token_expire_minutes),
     }
-    return jwt.encode(
-        payload,
-        settings.jwt_secret_key.get_secret_value(),
-        algorithm=settings.jwt_algorithm,
-    )
+    return jwt.encode(payload, settings.jwt_secret_key.get_secret_value(), algorithm=settings.jwt_algorithm)
 
 
 def decode_access_token(token: str) -> int:

@@ -29,20 +29,22 @@ def test_deprecated_session_checkpoints_are_removed() -> None:
     assert admin.status_code == 404
 
 
-def test_auth_frontend_uses_tab_scoped_token_storage() -> None:
-    source = (FRONTEND / "js" / "auth" / "session.js").read_text(encoding="utf-8")
+def test_auth_frontend_uses_httponly_cookie_session() -> None:
+    session_source = (FRONTEND / "js" / "auth" / "session.js").read_text(encoding="utf-8")
+    client_source = (FRONTEND / "js" / "api" / "client.js").read_text(encoding="utf-8")
 
-    assert "sessionStorage" in source
-    assert "localStorage" not in source
-    assert 'residence.access_token' in source
+    assert "sessionStorage" not in session_source + client_source
+    assert "localStorage" not in session_source + client_source
+    assert "/auth/session" in client_source
+    assert 'credentials: "same-origin"' in client_source
+    assert "X-CSRF-Token" in client_source
 
 
-def test_api_client_attaches_bearer_token_and_handles_401() -> None:
+def test_api_client_does_not_attach_browser_bearer_tokens() -> None:
     source = (FRONTEND / "js" / "api" / "client.js").read_text(encoding="utf-8")
 
-    assert 'Authorization' in source
-    assert 'Bearer ${token}' in source
-    assert "response.status === 401" in source
+    assert "Bearer ${token}" not in source
+    assert "Authorization" not in source
 
 
 def test_registration_does_not_accept_admin_role_from_client() -> None:

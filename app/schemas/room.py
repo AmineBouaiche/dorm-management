@@ -8,6 +8,8 @@ from app.schemas.building import BuildingRead
 
 
 class RoomCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
     building_id: int = Field(gt=0)
     room_number: str = Field(min_length=1, max_length=20)
     room_type: RoomType
@@ -16,6 +18,8 @@ class RoomCreate(BaseModel):
 
 
 class RoomUpdate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
     building_id: int | None = Field(default=None, gt=0)
     room_number: str | None = Field(default=None, min_length=1, max_length=20)
     room_type: RoomType | None = None

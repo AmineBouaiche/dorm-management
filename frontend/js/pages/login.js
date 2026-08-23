@@ -1,6 +1,5 @@
 import { ApiError, login } from "../api/client.js";
 import { redirectAuthenticatedUser } from "../auth/guards.js";
-import { setAccessToken } from "../auth/session.js";
 import { APP_CONFIG } from "../config.js";
 
 const form = document.querySelector("[data-login-form]");
@@ -34,8 +33,7 @@ async function handleSubmit(event) {
 
   setSubmitting(true);
   try {
-    const token = await login(email, password);
-    setAccessToken(token.access_token);
+    await login(email, password);
 
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");

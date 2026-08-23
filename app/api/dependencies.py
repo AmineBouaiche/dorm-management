@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -10,18 +10,22 @@ from app.models.enums import UserRole
 from app.models.user import User
 from app.services import auth_service
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
 def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    bearer_token: Annotated[str | None, Depends(oauth2_scheme)],
+    session_token: Annotated[str | None, Cookie(alias="residence_session")] = None,
     db: Session = Depends(get_db),
 ) -> User:
+    token = bearer_token or session_token
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if not token:
+        raise credentials_error
     try:
         user_id = decode_access_token(token)
     except InvalidTokenError as exc:

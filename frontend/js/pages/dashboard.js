@@ -1,6 +1,7 @@
 import { ApiError, listMyBookings } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-dashboard-page]");
 const bookingHost = document.querySelector("[data-dashboard-booking]");
@@ -60,8 +61,8 @@ function renderBooking(booking) {
     <article class="panel dashboard-booking">
       <div class="dashboard-booking__top">
         <div>
-          <p class="card__eyebrow">${booking.room.building.name}</p>
-          <h2>Room ${booking.room.room_number}</h2>
+          <p class="card__eyebrow">${escapeHtml(booking.room.building.name)}</p>
+          <h2>Room ${escapeHtml(booking.room.room_number)}</h2>
         </div>
         ${statusMarkup(booking.status)}
       </div>
@@ -81,6 +82,6 @@ async function loadDashboard() {
     if (booking) renderBooking(booking); else renderEmpty();
   } catch (error) {
     const message = error instanceof ApiError ? error.message : "Try again.";
-    bookingHost.innerHTML = `<div class="message message--error"><strong>We could not load your accommodation.</strong><p>${message}</p></div>`;
+    bookingHost.innerHTML = `<div class="message message--error"><strong>We could not load your accommodation.</strong><p>${escapeHtml(message)}</p></div>`;
   }
 }

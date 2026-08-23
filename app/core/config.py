@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     jwt_issuer: str = "dorm-management"
     jwt_audience: str = "dorm-management-web"
     access_token_expire_minutes: int = 60
+    auth_cookie_name: str = "residence_session"
+    csrf_cookie_name: str = "residence_csrf"
+
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

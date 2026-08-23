@@ -1,6 +1,7 @@
 import { ApiError, listMyBookings } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-submitted-page]");
 const content = document.querySelector("[data-submitted-content]");
@@ -46,7 +47,7 @@ function showError(message) {
 function renderBooking(booking) {
   content.innerHTML = `
     <div class="status status--warning">Pending</div>
-    <h2 class="submitted-booking__title">${booking.room.building.name}, Room ${booking.room.room_number}</h2>
+    <h2 class="submitted-booking__title">${escapeHtml(booking.room.building.name)}, Room ${escapeHtml(booking.room.room_number)}</h2>
     <dl class="detail-list">
       <dt>Arrival</dt><dd>${humanDate(booking.start_date)}</dd>
       <dt>Departure</dt><dd>${humanDate(booking.end_date)}</dd>

@@ -276,3 +276,9 @@ docker compose ps
 ```
 
 The `app` service is behind the `production` Compose profile, so normal `docker compose up -d` continues to start only the development databases.
+
+## Security model
+
+The browser frontend authenticates with a short-lived JWT stored only in a Secure/HttpOnly/SameSite cookie in production. A separate readable CSRF cookie is used with an `X-CSRF-Token` header on state-changing requests. The bearer-token login remains available for development tooling and API clients, but the browser never persists or reads the JWT. New passwords are hashed with Argon2id; legacy PBKDF2 hashes are transparently upgraded after a successful login.
+
+Frontend dynamic values are HTML-escaped before template insertion, and the production CSP remains a defense-in-depth control rather than the primary XSS mitigation. Passwords require 12 to 128 characters.

@@ -1,6 +1,7 @@
 import { ApiError, createBooking, getRoom, listAvailableRooms } from "../api/client.js";
 import { requireAuthentication } from "../auth/guards.js";
 import { renderPrimaryNavigation } from "../components/navigation.js";
+import { escapeHtml } from "../utils/admin.js";
 
 const page = document.querySelector("[data-confirm-page]");
 const content = document.querySelector("[data-confirm-content]");
@@ -72,8 +73,8 @@ function renderSummary(room, available) {
     <section class="confirmation-section">
       <h2>Accommodation</h2>
       <dl class="detail-list">
-        <dt>Residence</dt><dd>${room.building.name}</dd>
-        <dt>Room</dt><dd>${room.room_number}</dd>
+        <dt>Residence</dt><dd>${escapeHtml(room.building.name)}</dd>
+        <dt>Room</dt><dd>${escapeHtml(room.room_number)}</dd>
         <dt>Room type</dt><dd>${room.room_type.charAt(0).toUpperCase() + room.room_type.slice(1)}</dd>
         <dt>Capacity</dt><dd>${room.capacity}</dd>
         <dt>Weekly rate</dt><dd>${money(room.weekly_rate)}</dd>
