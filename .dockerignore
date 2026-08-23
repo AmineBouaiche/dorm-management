@@ -4,3 +4,9 @@ __pycache__
 .pytest_cache
 .ruff_cache
 .env
+
+# Development-only files
+.github
+tests
+coverage.xml
+htmlcov

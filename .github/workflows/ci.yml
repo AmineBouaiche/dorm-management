@@ -60,3 +60,6 @@ jobs:
 
       - name: Run Ruff
         run: ruff check .
+
+      - name: Build production container
+        run: docker build --tag dorm-management:ci .

@@ -252,3 +252,27 @@ pytest
 ```
 
 before committing a milestone.
+
+## Production container
+
+The production Docker image uses a multi-stage build, runs the application as a non-root user, applies Alembic migrations before startup, and exposes a container health check at `/health`.
+
+Build locally:
+
+```bash
+docker build -t dorm-management:local .
+```
+
+The runtime requires at least `DATABASE_URL` and a strong `JWT_SECRET_KEY`. `ENVIRONMENT=production` is set by the image. The hosting platform should provide `PORT` when it does not use port 8000.
+
+The entrypoint runs `alembic upgrade head` before starting Uvicorn. This is appropriate for the current single-instance deployment target; migration orchestration should be separated if the service is later scaled to multiple concurrent application instances.
+
+Local production-image smoke test:
+
+```powershell
+$env:JWT_SECRET_KEY=(python -c "import secrets; print(secrets.token_urlsafe(48))")
+docker compose --profile production up --build -d app
+docker compose ps
+```
+
+The `app` service is behind the `production` Compose profile, so normal `docker compose up -d` continues to start only the development databases.
