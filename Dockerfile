@@ -35,7 +35,9 @@ COPY alembic.ini ./alembic.ini
 COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
 
 RUN chmod 0555 ./scripts/docker-entrypoint.sh \
-    && chown -R app:app /app
+    && chown -R root:app /app \
+    && chmod -R a-w /app \
+    && chmod -R a+rX /app
 
 USER app
 
