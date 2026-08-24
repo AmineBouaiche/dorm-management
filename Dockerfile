@@ -33,7 +33,6 @@ COPY frontend ./frontend
 COPY migrations ./migrations
 COPY alembic.ini ./alembic.ini
 COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
-COPY scripts/seed_demo_data.py ./scripts/seed_demo_data.py
 
 RUN chmod 0555 ./scripts/docker-entrypoint.sh \
     && chown -R root:app /app \
