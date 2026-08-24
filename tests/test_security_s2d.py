@@ -19,6 +19,7 @@ def test_ci_runs_dependency_vulnerability_audit() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 
     assert '"pip-audit>=2.10,<3.0"' in pyproject
+    assert '"pytest>=9.0.3,<10.0"' in pyproject
     assert "python -m pip_audit --skip-editable" in workflow
 
 
