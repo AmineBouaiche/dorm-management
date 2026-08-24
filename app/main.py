@@ -71,6 +71,10 @@ def create_app(app_settings: Settings = settings) -> FastAPI:
 
     @application.get("/", include_in_schema=False)
     def frontend_index() -> FileResponse:
+        return FileResponse(FRONTEND_ROOT / "index.html")
+
+    @application.get("/dashboard", include_in_schema=False)
+    def frontend_dashboard() -> FileResponse:
         return FileResponse(FRONTEND_ROOT / "student" / "dashboard.html")
 
     if not app_settings.is_production:

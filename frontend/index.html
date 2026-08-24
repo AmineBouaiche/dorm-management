@@ -1,11 +1,114 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Residence</title>
-  </head>
-  <body>
-    <script type="module" src="/static/js/pages/bootstrap.js"></script>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Residence helps students browse Bristol accommodation, compare rooms and manage bookings in one place." />
+  <title>Residence | Student accommodation in Bristol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/layout.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <link rel="stylesheet" href="/static/css/landing.css" />
+</head>
+<body>
+  <header class="site-header landing-header">
+    <div class="container site-header__inner">
+      <a class="wordmark" href="/">Residence</a>
+      <button class="mobile-menu-button" type="button" data-landing-menu-button aria-expanded="false" aria-controls="landing-menu">
+        Menu
+      </button>
+      <nav class="landing-nav" id="landing-menu" data-landing-menu aria-label="Primary navigation">
+        <a class="primary-nav__link" href="/rooms">Rooms</a>
+        <div class="landing-nav__actions" data-landing-actions>
+          <a class="primary-nav__link" href="/login">Sign in</a>
+          <a class="button button--primary landing-nav__button" href="/register">Create account</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="landing-hero">
+      <div class="container landing-hero__grid">
+        <div class="landing-hero__content">
+          <p class="eyebrow">Student accommodation in Bristol</p>
+          <h1 class="landing-hero__title">Find your place in Bristol</h1>
+          <p class="landing-hero__lead">Browse student residences, compare rooms and manage your accommodation from one place.</p>
+          <div class="cluster landing-hero__actions">
+            <a class="button button--primary" href="/rooms">Browse accommodation</a>
+            <a class="button button--secondary" href="/login">Sign in</a>
+          </div>
+        </div>
+        <figure class="landing-hero__media">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/6/64/Bristol_-_View_across_Floating_Harbour_to_colourful_houses_on_Ambrose_Rd_-_geograph.org.uk_-_4755271.jpg"
+            alt="View across Bristol Floating Harbour towards the colourful houses of Cliftonwood"
+            width="1024"
+            height="768"
+          />
+          <figcaption>Bristol Floating Harbour and Cliftonwood. Photo by Colin Park, CC BY-SA 2.0.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="landing-section" aria-labelledby="find-accommodation-heading">
+      <div class="container landing-feature">
+        <div>
+          <p class="eyebrow">Find accommodation</p>
+          <h2 id="find-accommodation-heading" class="landing-section__title">Choose accommodation with the details in front of you</h2>
+        </div>
+        <div class="landing-feature__body">
+          <p>Search residences by dates and room type, compare weekly rates and review availability before making a booking.</p>
+          <a class="text-link" href="/rooms">Browse rooms</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section landing-section--subtle" aria-labelledby="how-it-works-heading">
+      <div class="container">
+        <div class="landing-section__header">
+          <p class="eyebrow">How Residence works</p>
+          <h2 id="how-it-works-heading" class="landing-section__title">From search to settled</h2>
+        </div>
+        <div class="landing-steps">
+          <article class="landing-step">
+            <span class="landing-step__number">01</span>
+            <h3>Explore</h3>
+            <p>Browse available accommodation across Bristol residences.</p>
+          </article>
+          <article class="landing-step">
+            <span class="landing-step__number">02</span>
+            <h3>Book</h3>
+            <p>Select your stay and submit an accommodation request.</p>
+          </article>
+          <article class="landing-step">
+            <span class="landing-step__number">03</span>
+            <h3>Manage</h3>
+            <p>Track your booking, view its status and manage your accommodation.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="container landing-footer__inner">
+      <div>
+        <a class="wordmark" href="/">Residence</a>
+        <p>Student accommodation management platform.</p>
+      </div>
+      <nav class="landing-footer__links" aria-label="Footer navigation">
+        <a href="/rooms">Rooms</a>
+        <a href="/login">Sign in</a>
+        <a href="/register">Create account</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="/static/js/pages/landing.js"></script>
+</body>
 </html>

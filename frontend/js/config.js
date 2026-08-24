@@ -3,7 +3,8 @@ export const APP_CONFIG = Object.freeze({
   logo: null,
   apiBaseUrl: "/api",
   routes: Object.freeze({
-    home: "/",
+    landing: "/",
+    home: "/dashboard",
     login: "/login",
     register: "/register",
     rooms: "/rooms",

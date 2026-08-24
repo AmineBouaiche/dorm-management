@@ -9,7 +9,7 @@ const welcome = document.querySelector("[data-welcome]");
 
 const user = await requireAuthentication({ role: "student" });
 if (user && page) {
-  renderPrimaryNavigation({ currentPath: "/", role: "student" });
+  renderPrimaryNavigation({ currentPath: "/dashboard", role: "student" });
   const firstName = user.student?.first_name || "Student";
   welcome.textContent = `Welcome, ${firstName}. Manage your accommodation and booking.`;
   page.hidden = false;

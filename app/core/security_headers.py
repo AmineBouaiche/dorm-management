@@ -27,7 +27,7 @@ class SecurityHeadersMiddleware:
                     f"script-src {script_sources}; "
                     f"style-src {style_sources}; "
                     "font-src 'self' https://fonts.gstatic.com; "
-                    "img-src 'self' data: https://fastapi.tiangolo.com; "
+                    "img-src 'self' data: https://fastapi.tiangolo.com https://upload.wikimedia.org; "
                     "connect-src 'self'; "
                     "frame-ancestors 'none'; "
                     "base-uri 'self'; "

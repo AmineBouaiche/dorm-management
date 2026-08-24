@@ -14,7 +14,7 @@ export function renderPrimaryNavigation({ currentPath = "/", role = "student" } 
   if (!host) return;
 
   const studentItems = [
-    { label: "Dashboard", href: "/" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "Rooms", href: "/rooms" },
     { label: "My Bookings", href: "/bookings" },
     { label: "Account", href: "/account" },

@@ -9,7 +9,7 @@ FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
 
 def test_student_dashboard_and_account_routes_are_served() -> None:
     with TestClient(app) as client:
-        dashboard = client.get("/")
+        dashboard = client.get("/dashboard")
         account = client.get("/account")
 
     assert dashboard.status_code == 200
