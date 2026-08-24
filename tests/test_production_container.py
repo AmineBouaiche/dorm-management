@@ -47,3 +47,8 @@ def test_runtime_files_are_root_owned_and_not_writable_by_app_user() -> None:
 def test_production_uvicorn_disables_server_header() -> None:
     entrypoint = Path("scripts/docker-entrypoint.sh").read_text(encoding="utf-8")
     assert "--no-server-header" in entrypoint
+
+
+def test_entrypoint_uses_platform_port() -> None:
+    entrypoint = Path("scripts/docker-entrypoint.sh").read_text(encoding="utf-8")
+    assert '"${PORT:-8000}"' in entrypoint

@@ -1,3 +1,5 @@
+import ipaddress
+import os
 import secrets
 from typing import Annotated
 
@@ -46,7 +48,19 @@ def _current_user_to_read(current_user: User) -> CurrentUserRead:
 
 
 def _client_ip(request: Request) -> str:
-    # Do not trust X-Forwarded-For until the deployment proxy topology is explicitly configured.
+    """Return a trustworthy client IP for rate-limit keys.
+
+    Render terminates public traffic at its edge and overwrites CF-Connecting-IP
+    with the real client address. Outside Render, fall back to the ASGI peer
+    address and ignore caller-controlled forwarding headers.
+    """
+    if os.getenv("RENDER", "").lower() == "true":
+        forwarded = request.headers.get("CF-Connecting-IP", "").strip()
+        if forwarded:
+            try:
+                return str(ipaddress.ip_address(forwarded))
+            except ValueError:
+                pass
     return request.client.host if request.client is not None else "unknown"
 
 

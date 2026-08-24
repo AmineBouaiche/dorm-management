@@ -88,3 +88,51 @@ def test_room_and_booking_inputs_have_resilience_bounds(client: TestClient) -> N
         params={"start_date": "2026-01-01", "end_date": "2029-01-01"},
     )
     assert long_window.status_code == 422
+
+
+def test_render_uses_trusted_cf_connecting_ip_for_rate_limits(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("RENDER", "true")
+    from app.api.routes.auth import _client_ip
+
+    # Starlette Request is needed because httpx.Request does not expose .client.
+    from starlette.requests import Request
+
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "path": "/health",
+        "headers": [
+            (b"cf-connecting-ip", b"203.0.113.42"),
+            (b"x-forwarded-for", b"198.51.100.9"),
+        ],
+        "client": ("10.0.0.8", 12345),
+        "server": ("testserver", 80),
+        "scheme": "http",
+        "query_string": b"",
+        "root_path": "",
+        "http_version": "1.1",
+    }
+    assert _client_ip(Request(scope)) == "203.0.113.42"
+
+
+def test_non_render_ignores_forwarding_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("RENDER", raising=False)
+    from app.api.routes.auth import _client_ip
+    from starlette.requests import Request
+
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "path": "/health",
+        "headers": [(b"cf-connecting-ip", b"203.0.113.42")],
+        "client": ("127.0.0.1", 12345),
+        "server": ("testserver", 80),
+        "scheme": "http",
+        "query_string": b"",
+        "root_path": "",
+        "http_version": "1.1",
+    }
+    assert _client_ip(Request(scope)) == "127.0.0.1"
