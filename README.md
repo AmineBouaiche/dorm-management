@@ -1,26 +1,36 @@
 # Dorm Management System
+[![CI](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml/badge.svg)](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml) · [Live Demo](https://dorm-management-dtty.onrender.com/)
+A production-deployed accommodation management platform built with FastAPI, PostgreSQL, and a framework-free frontend. Students can discover rooms, manage bookings, and track accommodation status, while administrators manage inventory, booking decisions, student records, analytics, and audit activity. The backend emphasizes transactional integrity, role-based authorization, production security, automated testing, and operational observability.
 
-[![CI](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml/badge.svg)](https://github.com/AmineBouaiche/dorm-management/actions/workflows/ci.yml)
 
-A backend-first dormitory management platform built with FastAPI and PostgreSQL. The project models residences, rooms, students and bookings, with transaction-safe booking constraints, JWT authentication and role-based authorization.
 
-## Stack
+## Screenshots
 
-- Python 3.13
-- FastAPI
-- PostgreSQL
-- SQLAlchemy 2
-- Alembic
-- Pydantic
-- PyJWT
-- pytest
-- Docker / Docker Compose
+### Student room discovery
+![room browsing screenshot](docs/screenshots/rooms.png)
 
-## Current capabilities
+### Student dashboard
+![student dashboard screenshot](docs/screenshots/student-dashboard.png)
+
+### Administration
+![admin booking management screenshot](docs/screenshots/admin-dashboard.png)
+
+
+
+## Tech Stack
+
+- **Backend:** Python 3.13, FastAPI, SQLAlchemy 2, Pydantic
+- **Database:** PostgreSQL, Alembic
+- **Authentication & Security:** JWT, Argon2id, CSRF protection, rate limiting
+- **Frontend:** HTML, CSS, JavaScript
+- **Testing & Quality:** pytest, Ruff, pip-audit
+- **Infrastructure:** Docker, Docker Compose, GitHub Actions, Render
+
+## Features
 
 ### Public
 - Register a student account
-- Log in and receive a JWT bearer token
+- Sign in through secure browser authentication
 - Browse active residences and rooms
 - Query active room availability for a date range
 
@@ -30,7 +40,6 @@ A backend-first dormitory management platform built with FastAPI and PostgreSQL.
 - Read own booking history
 - Cancel own bookings
 
-The booking request deliberately does not accept a student identifier. The backend derives the student from the authenticated user.
 
 ### Admin
 - Create and update residences
@@ -43,8 +52,57 @@ The booking request deliberately does not accept a student identifier. The backe
 - Cancel any booking
 - Read occupancy, booking-status and confirmed-revenue analytics
 
-## Weekly pricing
 
+## Architecture
+
+The application uses a modular monolithic architecture. A single FastAPI service serves both the REST API and frontend, while PostgreSQL provides persistent relational storage.
+
+
+```text
+Browser
+   |
+   | HTTPS
+   v
+FastAPI Application
+   |
+   |-- Authentication & RBAC
+   |-- Room & Residence Management
+   |-- Booking Service
+   |-- Admin & Analytics
+   |-- Audit Logging
+   |
+   | SQLAlchemy
+   v
+PostgreSQL
+
+```
+The application is containerized with Docker and deployed on Render with managed PostgreSQL. GitHub Actions provides the CI pipeline for automated testing, linting, vulnerability scanning, migrations, and production-container validation.
+
+
+## Design decisions
+
+### Modular monolith
+
+The system is implemented as a single FastAPI application with separated domain modules. For the current scope and deployment scale, a distributed or microservice architecture would add operational complexity without providing a meaningful benefit.
+
+### PostgreSQL
+
+Accommodation and booking data is relational and requires strong consistency. PostgreSQL provides transactional guarantees and database-level constraints for booking integrity.
+
+### Database-enforced booking integrity
+
+Booking conflicts are checked at the service layer for readable API responses and enforced again through PostgreSQL constraints. This protects critical invariants even under concurrent requests.
+
+### Server-side authorization
+
+Authorization is enforced by the API based on authenticated user roles and resource ownership. Frontend visibility is not treated as an authorization boundary.
+
+### Soft deletion
+
+Rooms and residences are deactivated rather than deleted, preserving historical booking records and referential integrity.
+
+
+## Weekly pricing
 Rooms now store `weekly_rate`, not an ambiguous `price` field. Booking totals are calculated by the backend:
 
 ```text
@@ -54,259 +112,292 @@ booking_amount = weekly_rate * billable_weeks
 
 A partial week is billed as a full week.
 
-Migration `20260820_0003` renames the old `price` column and normalizes existing synthetic development rooms to representative weekly rates because the old whole-booking values are not semantically convertible to weekly pricing.
+
 
 ## Inventory lifecycle
 
-Rooms and residences are never hard-deleted in v1. Both have an `is_active` flag.
+Rooms and residences are never hard-deleted. Both have an `is_active` flag.
 
 - active residence + active room: visible and bookable
 - inactive residence or room: hidden from public room discovery and cannot receive new bookings
 - historical bookings remain readable
 
-A residence also has an optional `image_url`, intended to point to its representative frontend image.
+
 
 ## Booking integrity
 
-Pending and confirmed bookings block overlapping room/date ranges. A student also cannot hold overlapping active bookings across different rooms. PostgreSQL exclusion constraints are the final concurrency-safe enforcement layer; service-level checks provide readable API errors.
+Booking correctness is enforced at both the application and database layers.
+
+- pending and confirmed bookings block overlapping reservations for the same room
+- students cannot hold overlapping active bookings across different rooms
+- service-level validation returns readable conflict responses
+- PostgreSQL exclusion constraints provide concurrency-safe enforcement against conflicting bookings
+
+This prevents booking correctness from depending solely on application-level checks.
 
 
 ## Continuous integration
 
-GitHub Actions runs on pushes and pull requests targeting `main`. The CI job provisions PostgreSQL 17, installs Python 3.13 dependencies, applies Alembic migrations, executes the full pytest suite, and runs Ruff.
+GitHub Actions runs the CI pipeline on pushes and pull requests targeting `main`.
+
+The pipeline:
+
+- provisions PostgreSQL 17
+- installs the Python 3.13 application and development dependencies
+- applies the complete Alembic migration history
+- runs the full pytest suite
+- runs Ruff static analysis
+- audits Python dependencies for known vulnerabilities with `pip-audit`
+- builds and validates the hardened production container
+
+A failing test, lint check, vulnerability audit, migration, or production-container check prevents the CI pipeline from passing.
 
 ## Local setup
 
-Copy `.env.example` to `.env` and replace `JWT_SECRET_KEY` with a long random value for anything beyond local development.
+### Prerequisites
+
+- Python 3.13
+- Docker and Docker Compose
+- Git
+
+Clone the repository and create the virtual environment:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-docker compose up -d
-alembic upgrade head
-pytest
 ```
 
-After the Phase 5A update, `alembic current` should report:
+Copy `.env.example` to `.env` and configure the local environment variables.
 
-```text
-20260820_0003 (head)
-```
-
-## Create the first admin
-
-With PostgreSQL running and the virtual environment active:
+Start PostgreSQL and apply the migrations:
 
 ```powershell
-python scripts/create_admin.py
+docker compose up -d
+alembic upgrade head
 ```
 
-## Run the API
+Populate the development database with demo accommodation data:
+
+```powershell
+python scripts\seed_demo_data.py
+```
+
+Run the application:
 
 ```powershell
 uvicorn app.main:app --reload
 ```
 
-Swagger UI:
+The application is then available at:
 
 ```text
-http://127.0.0.1:8000/docs
+http://127.0.0.1:8000
 ```
+
+Run the development checks with:
+
+```powershell
+pytest
+ruff check .
+python -m pip_audit --skip-editable
+```
+
+## Create an administrator
+
+With PostgreSQL running, migrations applied, and the virtual environment active:
+
+```powershell
+python scripts/create_admin.py
+```
+
+The script prompts for an administrator email and password and creates a user with the `ADMIN` role. Passwords must satisfy the application's password requirements.
+
 
 ## Main API surface
 
 ```text
+Authentication
 POST  /api/auth/register
 POST  /api/auth/login
 GET   /api/auth/me
+POST  /api/auth/logout
 
+Residences
 GET   /api/buildings
 POST  /api/buildings                    ADMIN
 PATCH /api/buildings/{building_id}      ADMIN
 
+Rooms
 GET   /api/rooms
 GET   /api/rooms/available
 GET   /api/rooms/{room_id}
 POST  /api/rooms                        ADMIN
 PATCH /api/rooms/{room_id}              ADMIN
 
+Students
 GET   /api/students/me                  STUDENT
 
+Bookings
 POST  /api/bookings                     STUDENT
 GET   /api/bookings/me                  STUDENT
 PATCH /api/bookings/{id}/cancel         STUDENT (owner only)
 
-GET   /api/admin/buildings              ADMIN (includes inactive)
-GET   /api/admin/rooms                  ADMIN (includes inactive)
+Administration
+GET   /api/admin/buildings              ADMIN
+GET   /api/admin/rooms                  ADMIN
 GET   /api/admin/students               ADMIN
 GET   /api/admin/bookings               ADMIN
 PATCH /api/admin/bookings/{id}/confirm  ADMIN
 PATCH /api/admin/bookings/{id}/cancel   ADMIN
 GET   /api/admin/analytics              ADMIN
+GET   /api/admin/audit-logs             ADMIN
+
+Operations
+GET   /health
 ```
+
+
+## Testing
+
+The project includes 115 automated tests covering:
+
+- authentication and role-based authorization
+- residence and room APIs
+- booking creation, cancellation, conflicts, and lifecycle
+- database constraints and transactional integrity
+- student and administrator workflows
+- pagination and input validation
+- rate limiting and abuse controls
+- CSRF and browser-session security
+- security headers and production configuration
+- request tracing and administrative audit logging
+- frontend routes and application behavior
+- production container hardening
+
+The test suite runs automatically in GitHub Actions and must pass before CI succeeds.
 
 ## Test database isolation
 
-The automated test suite uses a separate PostgreSQL instance on port `5433` (`db_test`). It does not read from or modify the persistent development database on port `5432`.
+The automated test suite uses a dedicated PostgreSQL test database separate from the development database.
 
-Start both services with:
+At the beginning of each test session, Alembic rebuilds the schema from the migration history. Each test runs inside an isolated transaction/savepoint that is rolled back afterward, preventing test data from leaking between cases.
 
-```powershell
-docker compose up -d
-```
-
-Then run:
+Run the full suite with:
 
 ```powershell
 pytest
 ```
 
-At the beginning of each test session, Alembic rebuilds the test schema from the migration history. Each individual test runs inside an outer transaction/savepoint and is rolled back afterward, so test data cannot leak between tests.
 
-## Frontend foundation
+## Production deployment
 
-The first frontend milestone is intentionally framework-free and establishes the shared interface system before feature pages are implemented.
+The application is deployed on Render as a Dockerized FastAPI service backed by managed PostgreSQL.
 
-- Source Sans 3 typography with system fallbacks
-- centralized color, typography, spacing, radius, layout, and motion tokens
-- responsive 1240 px content container
-- primary top navigation with a text-based mobile menu
-- secondary administration navigation primitives
-- shared buttons, fields, panels, status indicators, messages, tables, skeletons, and dialog styles
-- FastAPI static-file serving from `frontend/`
-- `/style-guide` visual reference for the foundation components
+The production environment:
 
-Run the application and open `http://127.0.0.1:8000/style-guide` to inspect the current frontend foundation.
+- serves the application exclusively over HTTPS
+- applies Alembic migrations during container startup
+- runs as a non-root user with a read-only application filesystem
+- disables development endpoints such as `/docs`, `/redoc`, `/openapi.json`, and `/style-guide`
+- requires a strong production JWT secret
+- connects to PostgreSQL over Render's private network
+- exposes `/health` for service health checks
 
-## Frontend authentication milestone
-
-The framework-free frontend now includes real registration and login flows backed by the FastAPI API. Access tokens are held in browser `sessionStorage`, attached as bearer tokens by a centralized API client, and cleared when an authenticated API request returns `401`. Role resolution uses `GET /api/auth/me`; student and administrator session checkpoints reject the wrong role and redirect to the correct authenticated area.
-
-Development routes:
-
-- `/login` - student/admin sign in
-- `/register` - student registration
-- `/session` - temporary student authentication checkpoint
-- `/admin/session` - temporary administrator authentication checkpoint
-- `/style-guide` - frontend foundation reference
-
-The session checkpoint pages are intentionally temporary. They validate authentication infrastructure without pre-empting the locked student dashboard and admin interface designs.
-
-## Student room discovery milestone
-
-The student-facing room discovery flow is available at `/rooms` and remains framework-free. It includes arrival/departure availability search, room type and residence filters, responsive residence-image cards, room detail pages, weekly-rate presentation, estimated totals, and explicit loading/empty/error handling. Room detail carries a selected stay to `/booking/confirm`, but Phase 5B.3 deliberately does not submit bookings yet.
-
-The repository includes four local representative residence assets and an idempotent development seed script. With the development database running and migrations applied, populate the catalogue with:
-
-```powershell
-python scripts/seed_demo_data.py
-```
-
-This creates or refreshes North Hall, West Court, Riverside House, and Clifton Lodge with approximately 32 synthetic rooms using realistic weekly rates. The data is for local development/demo use only.
-
-
-## Phase 5B.4 booking workflow
-
-The student room-detail handoff now continues through an authenticated confirmation page and submits to the real `POST /api/bookings` endpoint. The confirmation page rechecks availability, displays billable weeks and an estimated total, disables duplicate submissions, and maps booking conflicts to domain-specific messages. Successful requests route to `/booking/submitted`, where the persisted booking is reloaded from `/api/bookings/me` and shown with its server-calculated amount and pending status.
-
-## Phase 5B.5 student experience
-
-The student frontend now includes the real dashboard, My Bookings, booking details, cancellation flow, and account page. The dashboard prioritises an active booking and otherwise the nearest upcoming pending or confirmed booking. Cancellation is ownership-protected by the backend and requires a custom destructive confirmation dialog in the frontend.
-
-
-## Admin interface
-
-Authenticated administrators use `/admin` for the operational interface. It includes the accommodation overview, room and residence inventory management, student records, booking management, and confirmed-revenue analytics. Inventory is retired through active/inactive state rather than hard deletion so historical bookings remain intact.
-
-## Production hardening
-
-The application distinguishes development and production configuration through `ENVIRONMENT`.
-Production startup rejects placeholder or short JWT secrets, API documentation is disabled, and the
-development-only style guide is not routed. JWTs validate issuer, audience, issue time, and expiry
-claims in addition to the user subject.
-
-Every HTTP response receives baseline browser security headers including a Content Security Policy,
-clickjacking protection, MIME-sniffing protection, a restrictive permissions policy, and a referrer
-policy. The frontend and API are intentionally same-origin, so permissive CORS is not enabled.
-
-Before production deployment, set at least:
+Required production configuration:
 
 ```env
 ENVIRONMENT=production
 DATABASE_URL=postgresql+psycopg://...
-JWT_SECRET_KEY=<unique-random-secret-at-least-32-characters>
+JWT_SECRET_KEY=<strong-random-secret>
 ```
 
-Development helpers such as `/docs`, `/redoc`, `/openapi.json`, and `/style-guide` are available only
-outside production where applicable.
-
-### Code quality
-
-Ruff configuration is included in `pyproject.toml`. Run:
-
-```powershell
-ruff check .
-pytest
-```
-
-before committing a milestone.
-
-## Production container
-
-The production Docker image uses a multi-stage build, runs the application as a non-root user, applies Alembic migrations before startup, and exposes a container health check at `/health`.
-
-Build locally:
-
-```bash
-docker build -t dorm-management:local .
-```
-
-The runtime requires at least `DATABASE_URL` and a strong `JWT_SECRET_KEY`. `ENVIRONMENT=production` is set by the image. The hosting platform should provide `PORT` when it does not use port 8000.
-
-The entrypoint runs `alembic upgrade head` before starting Uvicorn. This is appropriate for the current single-instance deployment target; migration orchestration should be separated if the service is later scaled to multiple concurrent application instances.
-
-Local production-image smoke test:
-
-```powershell
-$env:JWT_SECRET_KEY=(python -c "import secrets; print(secrets.token_urlsafe(48))")
-docker compose --profile production up --build -d app
-docker compose ps
-```
-
-The `app` service is behind the `production` Compose profile, so normal `docker compose up -d` continues to start only the development databases.
-
-## Security model
-
-The browser frontend authenticates with a short-lived JWT stored only in a Secure/HttpOnly/SameSite cookie in production. A separate readable CSRF cookie is used with an `X-CSRF-Token` header on state-changing requests. The bearer-token login remains available for development tooling and API clients, but the browser never persists or reads the JWT. New passwords are hashed with Argon2id; legacy PBKDF2 hashes are transparently upgraded after a successful login.
-
-Frontend dynamic values are HTML-escaped before template insertion, and the production CSP remains a defense-in-depth control rather than the primary XSS mitigation. Passwords require 12 to 128 characters.
-
-### Abuse and request-size controls
-
-The API enforces a 64 KiB request-body ceiling because the application has no upload endpoints. Authentication failures are throttled with sliding windows keyed by both client IP and normalized account identifier, while registration is throttled by client IP. Rate-limit responses use HTTP 429 and include `Retry-After`.
-
-The current limiter is intentionally process-local and is valid for the single-Uvicorn-worker deployment profile in this repository. A multi-instance deployment must replace it with a shared limiter store before scaling out.
+Database credentials and application secrets are supplied through environment variables and are never stored in the repository.
 
 
-## Security 6.S2B: API and data resilience
+## Security
 
-Collection endpoints are bounded with `page` and `per_page` query parameters. The maximum page size is 100 and responses include `X-Total-Count`, `X-Page`, and `X-Per-Page` headers. Ordering is deterministic. Production assigns an `X-Request-ID` correlation identifier to responses and converts unhandled application exceptions into a generic JSON 500 response while logging only request metadata and the server-side exception.
+Security controls are enforced across authentication, authorization, browser interaction, API access, and the production runtime.
 
-## Security 6.S2C: observability and accountability
+- JWT authentication with issuer, audience, issue-time, and expiry validation
+- role-based authorization for student and administrator operations
+- Secure, HttpOnly, SameSite authentication cookies in production
+- CSRF protection for authenticated state-changing browser requests
+- Argon2id password hashing with transparent migration of legacy hashes
+- 12–128 character password requirements
+- HTML escaping of dynamic frontend values and Content Security Policy enforcement
+- security headers protecting against clickjacking, MIME sniffing, unnecessary browser permissions, and unsafe referrer behavior
+- 64 KiB request-body limits
+- rate limiting for authentication and registration abuse
+- generic authentication failures to reduce account enumeration
+- production-only disabling of development endpoints
 
-The application keeps operational request logs intentionally sparse. Each HTTP request is logged with only its correlation ID, method, path, response status, and duration. Query strings, request bodies, cookies, authorization headers, passwords, tokens, and user-agent data are not included by the application request logger.
+The current rate limiter is process-local and designed for the application's single-instance deployment. A horizontally scaled deployment would require a shared rate-limit store.
 
-Successful privileged mutations create persistent database audit records. The audit trail currently covers residence creation/updates, room creation/updates, and admin booking confirmation/cancellation. Records contain the acting admin user ID, action, resource type and ID, correlation ID, timestamp, and only minimal non-sensitive metadata such as the names of fields changed. Audit records are available to administrators through the paginated `GET /api/admin/audit-logs` endpoint.
 
 ## Supply-chain security
 
-The repository uses layered dependency monitoring and CI enforcement:
+Dependency and build security are integrated into the development workflow:
 
-- Dependabot checks Python dependencies, GitHub Actions, and the Docker base image weekly.
-- CI installs `pip-audit` with the development toolchain and fails when the resolved Python environment contains a known vulnerability reported by the audit service.
-- The workflow keeps the default `GITHUB_TOKEN` read-only and disables persisted checkout credentials because the CI job never pushes changes.
-- Dependency update pull requests still run the full PostgreSQL migration, pytest, Ruff, vulnerability-audit, and production-container build gates before merge.
+- Dependabot monitors Python dependencies, GitHub Actions, and the Docker base image
+- `pip-audit` checks the resolved Python environment for known vulnerabilities
+- dependency updates run through the complete CI test, lint, migration, vulnerability, and container-build gates
+- GitHub Actions uses read-only permissions and does not persist checkout credentials
+- production container builds are validated as part of CI
 
-`pip-audit` requires network access to query vulnerability data. A transient advisory-service outage should be treated as an infrastructure failure rather than bypassed by disabling the security gate.
+Security checks are treated as CI requirements rather than optional development tooling.
+
+## Resilience and observability
+
+Collection endpoints use bounded pagination with deterministic ordering to prevent unbounded responses. Production requests receive an `X-Request-ID` correlation identifier, while unhandled application errors return generic responses without exposing internal details.
+
+Application request logs intentionally exclude query strings, request bodies, cookies, authorization headers, passwords, tokens, and other sensitive values.
+
+Privileged administrative mutations generate persistent audit records containing the acting administrator, action, affected resource, request ID, timestamp, and minimal non-sensitive change metadata.
+
+The audit trail covers:
+
+- residence creation and updates
+- room creation and updates
+- booking confirmation and cancellation
+
+Administrators can review audit records through the paginated `/api/admin/audit-logs` endpoint.
+
+### Project status
+
+The application is feature-complete for its intended scope and deployed to production.
+
+The current architecture targets a single application instance. Horizontal scaling would require infrastructure changes such as a shared rate-limit store and separate migration orchestration.
+
+## Project structure
+
+```text
+app/
+├── api/            API routes and HTTP endpoints
+├── core/           Configuration and security
+├── db/             Database session and engine configuration
+├── models/         SQLAlchemy database models
+├── schemas/        Pydantic request/response schemas
+└── services/       Application business logic
+
+frontend/
+├── assets/         Residence images and static assets
+├── css/            Design system, shared styles and page styles
+├── js/             API client and frontend application logic
+└── pages/          Application HTML pages
+
+migrations/         Alembic migration history
+scripts/            Admin creation and demo-data utilities
+tests/              API, integration, frontend and security tests
+.github/workflows/  GitHub Actions CI pipeline
+
+Dockerfile          Hardened production container
+docker-compose.yml  Local PostgreSQL and container configuration
+alembic.ini         Alembic configuration
+pyproject.toml      Python dependencies and tooling configuration
+```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
